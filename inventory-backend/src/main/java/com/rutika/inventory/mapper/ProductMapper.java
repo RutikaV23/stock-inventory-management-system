@@ -26,12 +26,9 @@ public class ProductMapper {
         response.setSku(product.getSku());
         response.setPrice(product.getPrice());
         response.setStockQuantity(product.getStockQuantity());
-        response.setStatus(product.getStatus());
+        response.setStatus(product.getStatus().name());
         response.setCreatedAt(product.getCreatedAt());
         response.setUpdatedAt(product.getUpdatedAt());
-        if (product.getCategory() != null) {
-            response.setCategoryName(product.getCategory().getName());
-        }
         return response;
     }
 

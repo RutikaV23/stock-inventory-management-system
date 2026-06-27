@@ -16,7 +16,6 @@ public class ProductResponse {
     private String sku;
     private BigDecimal price;
     private Integer stockQuantity;
-    private String categoryName;
     private String status;
     private Instant createdAt;
     private Instant updatedAt;

@@ -9,7 +9,7 @@ public final class ApiConstants {
     public static final String PRODUCT_PATH = BASE_PATH + "/products";
     public static final String STOCK_IN_PATH = BASE_PATH + "/stock-in";
     public static final String STOCK_OUT_PATH = BASE_PATH + "/stock-out";
-    public static final String CATEGORY_PATH = BASE_PATH + "/categories";
+
 
     public static final String ID_PATH_VARIABLE = "/{id}";
     public static final String SEARCH = "/search";

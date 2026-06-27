@@ -13,6 +13,7 @@ import com.rutika.inventory.repository.ProductRepository;
 import com.rutika.inventory.repository.StockInRepository;
 import com.rutika.inventory.repository.StockOutRepository;
 import com.rutika.inventory.service.interfaces.StockService;
+import com.rutika.inventory.validator.StockValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ public class StockServiceImpl implements StockService {
     private final StockOutRepository stockOutRepository;
     private final ProductRepository productRepository;
     private final StockMapper stockMapper;
+    private final StockValidator stockValidator;
 
     @Override
     @Transactional
@@ -47,6 +49,8 @@ public class StockServiceImpl implements StockService {
     public StockOutResponse removeStock(StockOutRequest request) {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", request.getProductId()));
+
+        stockValidator.validateStockOut(request);
 
         StockOut stockOut = stockMapper.toOutEntity(request);
         stockOut.setProduct(product);

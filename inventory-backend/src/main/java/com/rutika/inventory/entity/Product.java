@@ -1,5 +1,6 @@
 package com.rutika.inventory.entity;
 
+import com.rutika.inventory.enums.ProductStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,18 +37,15 @@ public class Product {
     @Column(name = "reorder_level")
     private Integer reorderLevel;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private String status;
+    private ProductStatus status;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", foreignKey = @ForeignKey(name = "fk_product_category"))
-    private Category category;
 
     @PrePersist
     public void prePersist() {
@@ -58,7 +56,7 @@ public class Product {
         this.createdAt = now;
         this.updatedAt = now;
         if (this.status == null) {
-            this.status = "ACTIVE";
+            this.status = ProductStatus.ACTIVE;
         }
         if (this.stockQuantity == null) {
             this.stockQuantity = 0;

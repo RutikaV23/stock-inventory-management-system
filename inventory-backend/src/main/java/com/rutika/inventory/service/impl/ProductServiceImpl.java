@@ -4,11 +4,13 @@ import com.rutika.inventory.constants.MessageConstants;
 import com.rutika.inventory.dto.request.ProductRequest;
 import com.rutika.inventory.dto.response.ProductResponse;
 import com.rutika.inventory.entity.Product;
+import com.rutika.inventory.enums.ProductStatus;
 import com.rutika.inventory.exception.ResourceNotFoundException;
 import com.rutika.inventory.mapper.ProductMapper;
 import com.rutika.inventory.repository.ProductRepository;
 import com.rutika.inventory.response.PageResponse;
 import com.rutika.inventory.service.interfaces.ProductService;
+import com.rutika.inventory.validator.ProductValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,16 +23,19 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final ProductValidator productValidator;
 
     @Override
     @Transactional
     public ProductResponse createProduct(ProductRequest request) {
+        productValidator.validateCreate(request);
         Product product = productMapper.toEntity(request);
         Product savedProduct = productRepository.save(product);
         return productMapper.toResponse(savedProduct);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ProductResponse getProductById(String id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -39,6 +44,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageResponse<ProductResponse> getAllProducts(int page, int size) {
         Page<Product> productPage = productRepository.findAll(PageRequest.of(page, size));
         return PageResponse.<ProductResponse>builder()
@@ -57,6 +63,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public ProductResponse updateProduct(String id, ProductRequest request) {
+        productValidator.validateUpdate(id, request);
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         MessageConstants.PRODUCT, "id", id));
@@ -71,7 +78,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         MessageConstants.PRODUCT, "id", id));
-        product.setStatus("INACTIVE");
+        product.setStatus(ProductStatus.INACTIVE);
         productRepository.save(product);
     }
 }

@@ -1,5 +1,6 @@
 package com.rutika.inventory.entity;
 
+import com.rutika.inventory.enums.StockStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,8 +31,9 @@ public class StockIn {
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private String status;
+    private StockStatus status;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -43,7 +45,7 @@ public class StockIn {
         }
         this.createdAt = Instant.now();
         if (this.status == null) {
-            this.status = "ACTIVE";
+            this.status = StockStatus.ACTIVE;
         }
     }
 }

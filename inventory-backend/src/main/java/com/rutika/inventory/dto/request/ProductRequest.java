@@ -22,7 +22,5 @@ public class ProductRequest {
     @Positive(message = "Price must be greater than zero")
     private BigDecimal price;
 
-    private String categoryId;
-
     private Integer reorderLevel;
 }
