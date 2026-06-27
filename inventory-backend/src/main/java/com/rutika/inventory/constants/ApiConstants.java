@@ -1,0 +1,18 @@
+package com.rutika.inventory.constants;
+
+public final class ApiConstants {
+
+    private ApiConstants() {}
+
+    public static final String BASE_PATH = "/api/v1";
+
+    public static final String PRODUCT_PATH = BASE_PATH + "/products";
+    public static final String STOCK_IN_PATH = BASE_PATH + "/stock-in";
+    public static final String STOCK_OUT_PATH = BASE_PATH + "/stock-out";
+    public static final String CATEGORY_PATH = BASE_PATH + "/categories";
+
+    public static final String ID_PATH_VARIABLE = "/{id}";
+    public static final String SEARCH = "/search";
+    public static final String PAGE_DEFAULT = "0";
+    public static final String SIZE_DEFAULT = "10";
+}
