@@ -7,6 +7,9 @@ import com.rutika.inventory.dto.response.ProductResponse;
 import com.rutika.inventory.response.ApiResponse;
 import com.rutika.inventory.response.PageResponse;
 import com.rutika.inventory.service.interfaces.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -42,10 +45,20 @@ public class ProductController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all products with pagination, sorting, and search",
+               description = "Retrieves a paginated list of products with optional keyword search and sorting")
+    @Parameters({
+        @Parameter(name = "page", description = "Page number (zero-based)", example = "0"),
+        @Parameter(name = "size", description = "Number of items per page", example = "10"),
+        @Parameter(name = "sort", description = "Sort field and direction (e.g., name,asc or price,desc)", example = "id,asc"),
+        @Parameter(name = "keyword", description = "Search keyword (matches name, SKU, or description)", example = "laptop")
+    })
     public ApiResponse<PageResponse<ProductResponse>> getAllProducts(
             @RequestParam(defaultValue = ApiConstants.PAGE_DEFAULT) int page,
-            @RequestParam(defaultValue = ApiConstants.SIZE_DEFAULT) int size) {
-        PageResponse<ProductResponse> response = productService.getAllProducts(page, size);
+            @RequestParam(defaultValue = ApiConstants.SIZE_DEFAULT) int size,
+            @RequestParam(defaultValue = ApiConstants.SORT_DEFAULT) String sort,
+            @RequestParam(required = false) String keyword) {
+        PageResponse<ProductResponse> response = productService.getAllProducts(page, size, sort, keyword);
         return ApiResponse.success(MessageConstants.PRODUCT + MessageConstants.RETRIEVED_SUCCESS, response);
     }
 

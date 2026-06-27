@@ -15,4 +15,6 @@ public final class ApiConstants {
     public static final String SEARCH = "/search";
     public static final String PAGE_DEFAULT = "0";
     public static final String SIZE_DEFAULT = "10";
+    public static final String SORT_DEFAULT = "id,asc";
+    public static final String STOCK_IN_HISTORY_SORT_DEFAULT = "stockInDate,desc";
 }

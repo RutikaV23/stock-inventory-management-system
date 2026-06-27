@@ -14,6 +14,8 @@ import com.rutika.inventory.validator.ProductValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,8 +47,24 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ProductResponse> getAllProducts(int page, int size) {
-        Page<Product> productPage = productRepository.findAll(PageRequest.of(page, size));
+    public PageResponse<ProductResponse> getAllProducts(int page, int size, String sort, String keyword) {
+        String[] sortParams = sort.split(",");
+        String sortBy = sortParams[0];
+        Sort.Direction sortDir = Sort.Direction.ASC;
+        if (sortParams.length > 1) {
+            sortDir = Sort.Direction.fromString(sortParams[1]);
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDir, sortBy));
+
+        Page<Product> productPage;
+        if (keyword != null && !keyword.isBlank()) {
+            productPage = productRepository
+                    .findByNameContainingIgnoreCaseOrSkuContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                            keyword, keyword, keyword, pageable);
+        } else {
+            productPage = productRepository.findAll(pageable);
+        }
+
         return PageResponse.<ProductResponse>builder()
                 .content(productPage.getContent().stream()
                         .map(productMapper::toResponse)
