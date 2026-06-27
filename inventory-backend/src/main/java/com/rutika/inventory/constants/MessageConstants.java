@@ -16,5 +16,6 @@ public final class MessageConstants {
     public static final String PRODUCT = "Product";
     public static final String STOCK_IN = "StockIn";
     public static final String STOCK_OUT = "StockOut";
+    public static final String DASHBOARD = "Dashboard statistics";
 
 }

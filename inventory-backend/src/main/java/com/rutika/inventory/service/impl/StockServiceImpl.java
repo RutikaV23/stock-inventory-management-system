@@ -4,6 +4,7 @@ import com.rutika.inventory.dto.request.StockInRequest;
 import com.rutika.inventory.dto.request.StockOutRequest;
 import com.rutika.inventory.dto.response.StockInHistoryResponse;
 import com.rutika.inventory.dto.response.StockInResponse;
+import com.rutika.inventory.dto.response.StockOutHistoryResponse;
 import com.rutika.inventory.dto.response.StockOutResponse;
 import com.rutika.inventory.entity.Product;
 import com.rutika.inventory.entity.StockIn;
@@ -115,8 +116,54 @@ public class StockServiceImpl implements StockService {
                 .build();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<StockOutHistoryResponse> getStockOutHistory(int page, int size, String sort, String keyword) {
+        if (page < 0) {
+            throw new BadRequestException("Page number cannot be negative");
+        }
+        if (size < 1) {
+            throw new BadRequestException("Page size must be greater than zero");
+        }
+
+        String[] sortParams = sort.split(",");
+        String sortBy = sortParams[0];
+        Sort.Direction sortDir = Sort.Direction.DESC;
+        if (sortParams.length > 1) {
+            try {
+                sortDir = Sort.Direction.fromString(sortParams[1]);
+            } catch (IllegalArgumentException e) {
+                throw new BadRequestException("Invalid sort direction: " + sortParams[1] + ". Use 'asc' or 'desc'.");
+            }
+        }
+
+        String entitySortField = mapSortField(sortBy);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDir, entitySortField));
+
+        String trimmedKeyword = keyword != null ? keyword.trim() : null;
+
+        Page<StockOut> stockOutPage;
+        if (trimmedKeyword != null && !trimmedKeyword.isBlank()) {
+            stockOutPage = stockOutRepository.searchByKeyword(trimmedKeyword, pageable);
+        } else {
+            stockOutPage = stockOutRepository.findAll(pageable);
+        }
+
+        return PageResponse.<StockOutHistoryResponse>builder()
+                .content(stockOutPage.getContent().stream()
+                        .map(stockMapper::toHistoryResponse)
+                        .toList())
+                .page(stockOutPage.getNumber())
+                .size(stockOutPage.getSize())
+                .totalElements(stockOutPage.getTotalElements())
+                .totalPages(stockOutPage.getTotalPages())
+                .first(stockOutPage.isFirst())
+                .last(stockOutPage.isLast())
+                .build();
+    }
+
     private String mapSortField(String sortField) {
-        if ("stockInDate".equals(sortField)) {
+        if ("stockInDate".equals(sortField) || "stockOutDate".equals(sortField)) {
             return "createdAt";
         }
         return sortField;

@@ -5,11 +5,12 @@ import com.rutika.inventory.dto.request.StockInRequest;
 import com.rutika.inventory.dto.request.StockOutRequest;
 import com.rutika.inventory.entity.Product;
 import com.rutika.inventory.entity.StockIn;
+import com.rutika.inventory.entity.StockOut;
 import com.rutika.inventory.enums.ProductStatus;
 import com.rutika.inventory.enums.StockStatus;
+import com.rutika.inventory.repository.ProductRepository;
 import com.rutika.inventory.repository.StockInRepository;
 import com.rutika.inventory.repository.StockOutRepository;
-import com.rutika.inventory.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -128,6 +130,38 @@ class InventoryBackendApplicationTests {
         monitor.setStockQuantity(23);
         productRepository.save(monitor);
 
+        StockOut stockOut1 = new StockOut();
+        stockOut1.setProduct(laptop);
+        stockOut1.setQuantity(2);
+        stockOut1.setReferenceNumber("SO-001");
+        stockOut1.setReason("Customer order");
+        stockOut1.setStatus(StockStatus.ACTIVE);
+        stockOut1.setCreatedAt(Instant.parse("2026-06-05T10:00:00Z"));
+        stockOutRepository.save(stockOut1);
+        laptop.setStockQuantity(13);
+        productRepository.save(laptop);
+
+        StockOut stockOut2 = new StockOut();
+        stockOut2.setProduct(mouse);
+        stockOut2.setQuantity(5);
+        stockOut2.setReferenceNumber("SO-002");
+        stockOut2.setReason("Bulk order");
+        stockOut2.setStatus(StockStatus.ACTIVE);
+        stockOut2.setCreatedAt(Instant.parse("2026-06-06T10:00:00Z"));
+        stockOutRepository.save(stockOut2);
+        mouse.setStockQuantity(65);
+        productRepository.save(mouse);
+
+        StockOut stockOut3 = new StockOut();
+        stockOut3.setProduct(keyboard);
+        stockOut3.setQuantity(3);
+        stockOut3.setReason("Damaged return");
+        stockOut3.setStatus(StockStatus.ACTIVE);
+        stockOut3.setCreatedAt(Instant.parse("2026-06-07T10:00:00Z"));
+        stockOutRepository.save(stockOut3);
+        keyboard.setStockQuantity(37);
+        productRepository.save(keyboard);
+
         rest = RestClient.create("http://localhost:" + port);
     }
 
@@ -226,7 +260,7 @@ class InventoryBackendApplicationTests {
         assertThat(response.getBody().success()).isTrue();
 
         Product updated = productRepository.findById(productId).orElseThrow();
-        assertThat(updated.getStockQuantity()).isEqualTo(15);
+        assertThat(updated.getStockQuantity()).isEqualTo(18);
     }
 
     @Test
@@ -248,7 +282,7 @@ class InventoryBackendApplicationTests {
         assertThat(response.getBody().success()).isTrue();
 
         Product updated = productRepository.findById(productId).orElseThrow();
-        assertThat(updated.getStockQuantity()).isEqualTo(7);
+        assertThat(updated.getStockQuantity()).isEqualTo(10);
     }
 
     @Test
@@ -334,7 +368,7 @@ class InventoryBackendApplicationTests {
         Map<String, Object> data = extractData(response.getBody().data());
         assertThat(data.get("totalElements")).isEqualTo(4);
 
-        java.util.List<Map<String, Object>> content = (java.util.List<Map<String, Object>>) data.get("content");
+        List<Map<String, Object>> content = (List<Map<String, Object>>) data.get("content");
         assertThat(content.get(0).get("name")).isEqualTo("Keyboard");
         assertThat(content.get(1).get("name")).isEqualTo("Laptop");
         assertThat(content.get(2).get("name")).isEqualTo("Monitor");
@@ -355,7 +389,7 @@ class InventoryBackendApplicationTests {
         Map<String, Object> data = extractData(response.getBody().data());
         assertThat(data.get("totalElements")).isEqualTo(4);
 
-        java.util.List<Map<String, Object>> content = (java.util.List<Map<String, Object>>) data.get("content");
+        List<Map<String, Object>> content = (List<Map<String, Object>>) data.get("content");
         assertThat(content.get(0).get("name")).isEqualTo("Mouse");
         assertThat(content.get(3).get("name")).isEqualTo("Keyboard");
     }
@@ -374,7 +408,7 @@ class InventoryBackendApplicationTests {
         Map<String, Object> data = extractData(response.getBody().data());
         assertThat(data.get("totalElements")).isEqualTo(2);
 
-        java.util.List<Map<String, Object>> content = (java.util.List<Map<String, Object>>) data.get("content");
+        List<Map<String, Object>> content = (List<Map<String, Object>>) data.get("content");
         assertThat(content.get(0).get("name")).isEqualTo("Monitor");
         assertThat(content.get(1).get("name")).isEqualTo("Mouse");
     }
@@ -572,6 +606,239 @@ class InventoryBackendApplicationTests {
         String firstItemDate = (String) content.get(0).get("stockInDate");
         String lastItemDate = (String) content.get(3).get("stockInDate");
         assertThat(firstItemDate).isGreaterThan(lastItemDate);
+    }
+
+    @Test
+    void getStockOutHistory_shouldReturnPage() {
+        var response = rest.get()
+                .uri("/api/v1/stock/out/history?page=0&size=10")
+                .retrieve()
+                .toEntity(ApiResponseHelper.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().success()).isTrue();
+
+        Map<String, Object> data = extractData(response.getBody().data());
+        assertThat(data.get("totalElements")).isEqualTo(3);
+        assertThat(data.get("page")).isEqualTo(0);
+        assertThat(data.get("totalPages")).isEqualTo(1);
+    }
+
+    @Test
+    void getStockOutHistory_withPagination_shouldReturnCorrectPage() {
+        var response = rest.get()
+                .uri("/api/v1/stock/out/history?page=0&size=2")
+                .retrieve()
+                .toEntity(ApiResponseHelper.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().success()).isTrue();
+
+        Map<String, Object> data = extractData(response.getBody().data());
+        assertThat(data.get("totalElements")).isEqualTo(3);
+        assertThat(data.get("page")).isEqualTo(0);
+        assertThat(data.get("size")).isEqualTo(2);
+        assertThat(data.get("totalPages")).isEqualTo(2);
+        assertThat(data.get("first")).isEqualTo(true);
+
+        var page1 = rest.get()
+                .uri("/api/v1/stock/out/history?page=1&size=2")
+                .retrieve()
+                .toEntity(ApiResponseHelper.class);
+
+        Map<String, Object> page1Data = extractData(page1.getBody().data());
+        assertThat(page1Data.get("page")).isEqualTo(1);
+        assertThat(page1Data.get("first")).isEqualTo(false);
+        assertThat(page1Data.get("last")).isEqualTo(true);
+    }
+
+    @Test
+    void getStockOutHistory_withSortByQuantityAsc_shouldReturnOrderedResults() {
+        var response = rest.get()
+                .uri("/api/v1/stock/out/history?sort=quantity,asc&size=10")
+                .retrieve()
+                .toEntity(ApiResponseHelper.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().success()).isTrue();
+
+        Map<String, Object> data = extractData(response.getBody().data());
+        assertThat(data.get("totalElements")).isEqualTo(3);
+
+        List<Map<String, Object>> content = (List<Map<String, Object>>) data.get("content");
+        assertThat((Integer) content.get(0).get("quantity")).isEqualTo(2);
+        assertThat((Integer) content.get(1).get("quantity")).isEqualTo(3);
+        assertThat((Integer) content.get(2).get("quantity")).isEqualTo(5);
+    }
+
+    @Test
+    void getStockOutHistory_withSortByQuantityDesc_shouldReturnOrderedResults() {
+        var response = rest.get()
+                .uri("/api/v1/stock/out/history?sort=quantity,desc&size=10")
+                .retrieve()
+                .toEntity(ApiResponseHelper.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().success()).isTrue();
+
+        Map<String, Object> data = extractData(response.getBody().data());
+        assertThat(data.get("totalElements")).isEqualTo(3);
+
+        List<Map<String, Object>> content = (List<Map<String, Object>>) data.get("content");
+        assertThat((Integer) content.get(0).get("quantity")).isEqualTo(5);
+        assertThat((Integer) content.get(2).get("quantity")).isEqualTo(2);
+    }
+
+    @Test
+    void getStockOutHistory_withKeyword_shouldReturnMatchingResults() {
+        var response = rest.get()
+                .uri("/api/v1/stock/out/history?keyword=lap")
+                .retrieve()
+                .toEntity(ApiResponseHelper.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().success()).isTrue();
+
+        Map<String, Object> data = extractData(response.getBody().data());
+        assertThat(data.get("totalElements")).isEqualTo(1);
+    }
+
+    @Test
+    void getStockOutHistory_withKeywordNoMatch_shouldReturnEmptyResults() {
+        var response = rest.get()
+                .uri("/api/v1/stock/out/history?keyword=xyzzy")
+                .retrieve()
+                .toEntity(ApiResponseHelper.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().success()).isTrue();
+
+        Map<String, Object> data = extractData(response.getBody().data());
+        assertThat(data.get("totalElements")).isEqualTo(0);
+    }
+
+    @Test
+    void getStockOutHistory_withKeywordAndSortAndPagination_shouldReturnCombinedResults() {
+        var response = rest.get()
+                .uri("/api/v1/stock/out/history?page=0&size=10&sort=quantity,desc&keyword=order")
+                .retrieve()
+                .toEntity(ApiResponseHelper.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().success()).isTrue();
+
+        Map<String, Object> data = extractData(response.getBody().data());
+        assertThat(data.get("totalElements")).isEqualTo(2);
+
+        List<Map<String, Object>> content = (List<Map<String, Object>>) data.get("content");
+        assertThat((Integer) content.get(0).get("quantity")).isEqualTo(5);
+    }
+
+    @Test
+    void getStockOutHistory_withInvalidSortDirection_shouldReturn400() {
+        var response = rest.get()
+                .uri("/api/v1/stock/out/history?sort=quantity,invalid")
+                .retrieve()
+                .onStatus(HttpStatus.BAD_REQUEST::equals, (req, res) -> {})
+                .toEntity(ApiResponseHelper.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().success()).isFalse();
+    }
+
+    @Test
+    void getStockOutHistory_defaultSort_shouldReturnNewestFirst() {
+        var response = rest.get()
+                .uri("/api/v1/stock/out/history?size=10")
+                .retrieve()
+                .toEntity(ApiResponseHelper.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().success()).isTrue();
+
+        Map<String, Object> data = extractData(response.getBody().data());
+        assertThat(data.get("totalElements")).isEqualTo(3);
+
+        List<Map<String, Object>> content = (List<Map<String, Object>>) data.get("content");
+        String firstItemDate = (String) content.get(0).get("stockOutDate");
+        String lastItemDate = (String) content.get(2).get("stockOutDate");
+        assertThat(firstItemDate).isGreaterThan(lastItemDate);
+    }
+
+    @Test
+    void exportProductsToExcel_shouldReturnExcelFile() {
+        var response = rest.get()
+                .uri("/api/v1/products/export/excel")
+                .retrieve()
+                .toEntity(byte[].class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().length).isGreaterThan(0);
+        assertThat(Objects.requireNonNull(response.getHeaders().getContentType()).toString())
+                .isEqualTo("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        assertThat(response.getHeaders().getContentDisposition().toString())
+                .contains("attachment", "products.xlsx");
+    }
+
+    @Test
+    void exportProductsToExcel_shouldContainCorrectHeaders() throws Exception {
+        var response = rest.get()
+                .uri("/api/v1/products/export/excel")
+                .retrieve()
+                .toEntity(byte[].class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+
+        byte[] excelData = response.getBody();
+        try (var workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook(new java.io.ByteArrayInputStream(excelData))) {
+            var sheet = workbook.getSheet("Products");
+            assertThat(sheet).isNotNull();
+
+            var headerRow = sheet.getRow(0);
+            org.assertj.core.api.AssertionsForClassTypes.assertThat(headerRow).isNotNull();
+            assertThat(headerRow.getCell(0).getStringCellValue()).isEqualTo("Product Name");
+            assertThat(headerRow.getCell(1).getStringCellValue()).isEqualTo("Description");
+            assertThat(headerRow.getCell(2).getStringCellValue()).isEqualTo("Price");
+            assertThat(headerRow.getCell(3).getStringCellValue()).isEqualTo("Stock Quantity");
+            assertThat(headerRow.getCell(4).getStringCellValue()).isEqualTo("Reorder Level");
+            assertThat(headerRow.getCell(5).getStringCellValue()).isEqualTo("Status");
+            assertThat(headerRow.getCell(6).getStringCellValue()).isEqualTo("Created At");
+        }
+    }
+
+    @Test
+    void exportProductsToExcel_withEmptyDatabase_shouldReturnHeadersOnly() {
+        stockOutRepository.deleteAll();
+        stockInRepository.deleteAll();
+        productRepository.deleteAll();
+
+        var response = rest.get()
+                .uri("/api/v1/products/export/excel")
+                .retrieve()
+                .toEntity(byte[].class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().length).isGreaterThan(0);
+
+        try (var workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook(new java.io.ByteArrayInputStream(response.getBody()))) {
+            var sheet = workbook.getSheet("Products");
+            assertThat(sheet).isNotNull();
+            assertThat(sheet.getPhysicalNumberOfRows()).isEqualTo(1);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @SuppressWarnings("unchecked")

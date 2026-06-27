@@ -4,6 +4,7 @@ import com.rutika.inventory.dto.request.StockInRequest;
 import com.rutika.inventory.dto.request.StockOutRequest;
 import com.rutika.inventory.dto.response.StockInHistoryResponse;
 import com.rutika.inventory.dto.response.StockInResponse;
+import com.rutika.inventory.dto.response.StockOutHistoryResponse;
 import com.rutika.inventory.dto.response.StockOutResponse;
 import com.rutika.inventory.entity.StockIn;
 import com.rutika.inventory.entity.StockOut;
@@ -67,6 +68,21 @@ public class StockMapper {
         response.setStockInDate(stockIn.getCreatedAt());
         response.setRemarks(stockIn.getNotes());
         response.setCreatedAt(stockIn.getCreatedAt());
+        return response;
+    }
+
+    public StockOutHistoryResponse toHistoryResponse(StockOut stockOut) {
+        StockOutHistoryResponse response = new StockOutHistoryResponse();
+        response.setId(stockOut.getId());
+        response.setProductId(stockOut.getProduct().getId());
+        response.setProductName(stockOut.getProduct().getName());
+        response.setQuantity(stockOut.getQuantity());
+        response.setCurrentStock(stockOut.getProduct().getStockQuantity());
+        response.setReferenceNumber(stockOut.getReferenceNumber());
+        response.setReason(stockOut.getReason());
+        response.setPerformedBy(null);
+        response.setStockOutDate(stockOut.getCreatedAt());
+        response.setCreatedAt(stockOut.getCreatedAt());
         return response;
     }
 }
