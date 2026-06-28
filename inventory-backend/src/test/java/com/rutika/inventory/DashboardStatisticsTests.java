@@ -1,11 +1,13 @@
 package com.rutika.inventory;
 
+import com.rutika.inventory.dto.request.LoginRequest;
 import com.rutika.inventory.entity.Product;
 import com.rutika.inventory.entity.StockIn;
 import com.rutika.inventory.entity.StockOut;
 import com.rutika.inventory.enums.ProductStatus;
 import com.rutika.inventory.enums.StockStatus;
 import com.rutika.inventory.repository.ProductRepository;
+import com.rutika.inventory.repository.RefreshTokenRepository;
 import com.rutika.inventory.repository.StockInRepository;
 import com.rutika.inventory.repository.StockOutRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
 
 import java.math.BigDecimal;
@@ -37,13 +40,20 @@ class DashboardStatisticsTests {
     @Autowired
     private StockOutRepository stockOutRepository;
 
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
+
     private RestClient rest;
+    private String authToken;
 
     @BeforeEach
     void setUp() {
+        refreshTokenRepository.deleteAll();
         stockOutRepository.deleteAll();
         stockInRepository.deleteAll();
         productRepository.deleteAll();
+
+        authToken = loginAndGetToken();
 
         Product activeNormal = new Product();
         activeNormal.setName("Laptop");
@@ -122,8 +132,28 @@ class DashboardStatisticsTests {
         stockOut2.setCreatedAt(Instant.parse("2026-06-06T10:00:00Z"));
         stockOutRepository.save(stockOut2);
 
-        rest = RestClient.create("http://localhost:" + port);
+        rest = RestClient.builder()
+                .baseUrl("http://localhost:" + port)
+                .defaultHeader("Authorization", "Bearer " + authToken)
+                .build();
     }
+
+    private String loginAndGetToken() {
+        LoginRequest login = new LoginRequest();
+        login.setEmail("admin@gmail.com");
+        login.setPassword("Admin@123");
+        var loginClient = RestClient.create("http://localhost:" + port);
+        var response = loginClient.post()
+                .uri("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(login)
+                .retrieve()
+                .toEntity(AuthLoginResponse.class);
+        return response.getBody().data().accessToken();
+    }
+
+    private record AuthLoginResponse(boolean success, String message, AuthData data, String timestamp) {}
+    private record AuthData(String accessToken, String refreshToken, long expiresIn, Object user) {}
 
     private record ApiResponseHelper(boolean success, String message, Object data, String timestamp) {}
 

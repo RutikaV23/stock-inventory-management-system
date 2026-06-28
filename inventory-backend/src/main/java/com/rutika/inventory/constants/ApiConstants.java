@@ -19,4 +19,5 @@ public final class ApiConstants {
     public static final String STOCK_IN_HISTORY_SORT_DEFAULT = "stockInDate,desc";
     public static final String STOCK_OUT_HISTORY_SORT_DEFAULT = "stockOutDate,desc";
     public static final String DASHBOARD_PATH = BASE_PATH + "/dashboard";
+    public static final String AUTH_PATH = BASE_PATH + "/auth";
 }

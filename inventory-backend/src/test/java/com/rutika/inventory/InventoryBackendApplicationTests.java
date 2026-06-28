@@ -1,5 +1,6 @@
 package com.rutika.inventory;
 
+import com.rutika.inventory.dto.request.LoginRequest;
 import com.rutika.inventory.dto.request.ProductRequest;
 import com.rutika.inventory.dto.request.StockInRequest;
 import com.rutika.inventory.dto.request.StockOutRequest;
@@ -9,6 +10,7 @@ import com.rutika.inventory.entity.StockOut;
 import com.rutika.inventory.enums.ProductStatus;
 import com.rutika.inventory.enums.StockStatus;
 import com.rutika.inventory.repository.ProductRepository;
+import com.rutika.inventory.repository.RefreshTokenRepository;
 import com.rutika.inventory.repository.StockInRepository;
 import com.rutika.inventory.repository.StockOutRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,14 +45,21 @@ class InventoryBackendApplicationTests {
     @Autowired
     private StockOutRepository stockOutRepository;
 
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
+
     private RestClient rest;
     private String productId;
+    private String authToken;
 
     @BeforeEach
     void setUp() {
+        refreshTokenRepository.deleteAll();
         stockOutRepository.deleteAll();
         stockInRepository.deleteAll();
         productRepository.deleteAll();
+
+        authToken = loginAndGetToken();
 
         Product laptop = new Product();
         laptop.setName("Laptop");
@@ -162,8 +171,28 @@ class InventoryBackendApplicationTests {
         keyboard.setStockQuantity(37);
         productRepository.save(keyboard);
 
-        rest = RestClient.create("http://localhost:" + port);
+        rest = RestClient.builder()
+                .baseUrl("http://localhost:" + port)
+                .defaultHeader("Authorization", "Bearer " + authToken)
+                .build();
     }
+
+    private String loginAndGetToken() {
+        LoginRequest login = new LoginRequest();
+        login.setEmail("admin@gmail.com");
+        login.setPassword("Admin@123");
+        var loginClient = RestClient.create("http://localhost:" + port);
+        var response = loginClient.post()
+                .uri("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(login)
+                .retrieve()
+                .toEntity(AuthLoginResponse.class);
+        return response.getBody().data().accessToken();
+    }
+
+    private record AuthLoginResponse(boolean success, String message, AuthData data, String timestamp) {}
+    private record AuthData(String accessToken, String refreshToken, long expiresIn, Object user) {}
 
     @Test
     void createProduct_shouldReturn201() {

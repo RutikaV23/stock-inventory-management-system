@@ -24,6 +24,9 @@ spring:
     date-format: yyyy-MM-dd'T'HH:mm:ss'Z'
     time-zone: UTC
 
+  jwt:
+    secret: YnJhdmVOZXdXb3JsZDIwMjVUZXN0U2VjcmV0S2V5Rm9yU3RvY2tJbnZlbnRvcnk=
+
 springdoc:
   api-docs:
     path: /api-docs

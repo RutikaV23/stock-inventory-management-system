@@ -33,6 +33,7 @@ public class OpenApiConfig {
                 .servers(List.of(
                         new Server().url("http://localhost:8080").description("Local Development Server")))
                 .tags(List.of(
+                        new Tag().name("Authentication").description("Authentication and user profile management endpoints"),
                         new Tag().name("Products").description("Product management endpoints for CRUD operations and Excel export"),
                         new Tag().name("Stock").description("Stock transaction endpoints for stock-in, stock-out, and history"),
                         new Tag().name("Dashboard").description("Dashboard statistics endpoints")))
