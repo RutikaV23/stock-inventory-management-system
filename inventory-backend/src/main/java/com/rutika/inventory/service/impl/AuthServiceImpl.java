@@ -53,7 +53,8 @@ public class AuthServiceImpl implements AuthService {
 
         refreshTokenRepository.deleteByUserId(user.getId());
 
-        String accessToken = jwtService.generateAccessToken(user.getId(), user.getEmail(), "ADMIN");
+        String roleName = user.getRole() != null ? user.getRole().getRoleName() : "ADMIN";
+        String accessToken = jwtService.generateAccessToken(user.getId(), user.getEmail(), roleName);
         String refreshToken = jwtService.generateRefreshToken(user.getId());
 
         RefreshToken refreshTokenEntity = new RefreshToken();
@@ -67,6 +68,7 @@ public class AuthServiceImpl implements AuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .expiresIn(jwtService.getAccessTokenExpiration() / 1000)
+                .role(roleName)
                 .user(toUserProfileResponse(user))
                 .build();
     }
@@ -86,7 +88,8 @@ public class AuthServiceImpl implements AuthService {
         }
 
         User user = storedToken.getUser();
-        String newAccessToken = jwtService.generateAccessToken(user.getId(), user.getEmail(), "ADMIN");
+        String roleName = user.getRole() != null ? user.getRole().getRoleName() : "ADMIN";
+        String newAccessToken = jwtService.generateAccessToken(user.getId(), user.getEmail(), roleName);
 
         return RefreshTokenResponse.builder()
                 .accessToken(newAccessToken)
@@ -142,6 +145,7 @@ public class AuthServiceImpl implements AuthService {
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .phone(user.getPhone())
+                .role(user.getRole() != null ? user.getRole().getRoleName() : null)
                 .status(user.getStatus())
                 .lastLoginAt(user.getLastLoginAt())
                 .createdAt(user.getCreatedAt())

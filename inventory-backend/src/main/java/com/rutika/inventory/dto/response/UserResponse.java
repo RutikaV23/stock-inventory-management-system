@@ -9,8 +9,8 @@ import java.time.Instant;
 
 @Getter
 @Builder
-@Schema(description = "User profile response")
-public class UserProfileResponse {
+@Schema(description = "User response")
+public class UserResponse {
 
     @Schema(description = "User ID", example = "550e8400-e29b-41d4-a716-446655440000")
     private String id;
@@ -27,15 +27,18 @@ public class UserProfileResponse {
     @Schema(description = "User's phone number", example = "+1234567890")
     private String phone;
 
+    @Schema(description = "User role", example = "ADMIN")
+    private String role;
+
     @Schema(description = "User account status", example = "ACTIVE")
     private UserStatus status;
 
     @Schema(description = "Last login timestamp", example = "2026-06-27T10:30:00Z")
     private Instant lastLoginAt;
 
-    @Schema(description = "User role", example = "ADMIN")
-    private String role;
-
     @Schema(description = "Account creation timestamp", example = "2026-06-27T10:30:00Z")
     private Instant createdAt;
+
+    @Schema(description = "Account last updated timestamp", example = "2026-06-27T10:30:00Z")
+    private Instant updatedAt;
 }

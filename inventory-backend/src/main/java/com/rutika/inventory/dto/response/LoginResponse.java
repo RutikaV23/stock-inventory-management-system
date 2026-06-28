@@ -18,6 +18,9 @@ public class LoginResponse {
     @Schema(description = "Access token expiration time in seconds", example = "900")
     private long expiresIn;
 
+    @Schema(description = "User role", example = "ADMIN")
+    private String role;
+
     @Schema(description = "Authenticated user's profile")
     private UserProfileResponse user;
 }
