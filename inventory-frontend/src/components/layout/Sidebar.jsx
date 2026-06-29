@@ -8,9 +8,7 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
-  Avatar,
   Divider,
-  IconButton,
   Tooltip,
 } from '@mui/material';
 import {
@@ -19,9 +17,6 @@ import {
   ArrowCircleDown as StockInIcon,
   ArrowCircleUp as StockOutIcon,
   Assessment as ReportsIcon,
-  Person as PersonIcon,
-  Lock as LockIcon,
-  Logout as LogoutIcon,
   Inventory2Outlined,
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
@@ -35,19 +30,12 @@ const menuItems = [
   { text: 'Stock In', icon: <StockInIcon />, path: '/stock-in' },
   { text: 'Stock Out', icon: <StockOutIcon />, path: '/stock-out' },
   { text: 'Reports', icon: <ReportsIcon />, path: '/reports' },
-  { text: 'Profile', icon: <PersonIcon />, path: '/profile' },
-  { text: 'Change Password', icon: <LockIcon />, path: '/change-password' },
 ];
 
 const Sidebar = ({ open, mobileOpen, onClose }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
-
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login', { replace: true });
-  };
+  const { user } = useAuth();
 
   const drawerContent = (
     <Box
@@ -152,80 +140,18 @@ const Sidebar = ({ open, mobileOpen, onClose }) => {
 
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1.5,
           px: open ? 2.5 : 1.5,
           py: 2,
-          justifyContent: open ? 'flex-start' : 'center',
+          textAlign: open ? 'left' : 'center',
         }}
       >
-        <Avatar
-          sx={{
-            width: 36,
-            height: 36,
-            bgcolor: '#42a5f5',
-            fontSize: '0.875rem',
-            fontWeight: 700,
-          }}
+        <Typography
+          variant="caption"
+          noWrap
+          sx={{ opacity: 0.6, fontSize: '0.7rem' }}
         >
-          {user?.firstName?.[0]}
-          {user?.lastName?.[0]}
-        </Avatar>
-        {open && (
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography
-              variant="body2"
-              fontWeight={600}
-              noWrap
-              sx={{ lineHeight: 1.3 }}
-            >
-              {user?.firstName} {user?.lastName}
-            </Typography>
-            <Typography
-              variant="caption"
-              noWrap
-              sx={{ opacity: 0.6, fontSize: '0.7rem' }}
-            >
-              {user?.role?.replace(/_/g, ' ')}
-            </Typography>
-          </Box>
-        )}
-      </Box>
-
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: open ? 'flex-start' : 'center',
-          px: open ? 2.5 : 0,
-          pb: 2,
-        }}
-      >
-        <Tooltip title={open ? 'Logout' : 'Logout'} placement="right">
-          <IconButton
-            onClick={handleLogout}
-            sx={{
-              color: 'rgba(255,255,255,0.5)',
-              borderRadius: 2,
-              width: open ? '100%' : 40,
-              justifyContent: open ? 'flex-start' : 'center',
-              gap: 1.5,
-              px: open ? 1.5 : 0,
-              py: 1,
-              '&:hover': {
-                bgcolor: 'rgba(255,255,255,0.06)',
-                color: '#ef5350',
-              },
-            }}
-          >
-            <LogoutIcon fontSize="small" />
-            {open && (
-              <Typography variant="body2" fontWeight={500}>
-                Logout
-              </Typography>
-            )}
-          </IconButton>
-        </Tooltip>
+          {user?.role?.replace(/_/g, ' ')}
+        </Typography>
       </Box>
     </Box>
   );

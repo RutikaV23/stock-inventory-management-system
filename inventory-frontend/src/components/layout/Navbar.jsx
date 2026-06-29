@@ -1,4 +1,5 @@
-import { useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -6,8 +7,12 @@ import {
   IconButton,
   Box,
   Avatar,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  Divider,
 } from '@mui/material';
-import { Menu as MenuIcon } from '@mui/icons-material';
+import { Menu as MenuIcon, Person, Logout as LogoutIcon } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 
 const pageTitles = {
@@ -17,21 +22,35 @@ const pageTitles = {
   '/stock-out': 'Stock Out',
   '/reports': 'Reports',
   '/profile': 'Profile',
-  '/change-password': 'Change Password',
 };
-
-const currentDate = new Date().toLocaleDateString('en-US', {
-  weekday: 'short',
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
-});
 
 const Navbar = ({ onToggleSidebar }) => {
   const location = useLocation();
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
 
   const pageTitle = pageTitles[location.pathname] || 'Dashboard';
+
+  const handleAvatarClick = (e) => {
+    setAnchorEl(e.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleProfile = () => {
+    handleClose();
+    navigate('/profile');
+  };
+
+  const handleLogout = async () => {
+    handleClose();
+    await logout();
+    navigate('/login', { replace: true });
+  };
 
   return (
     <AppBar
@@ -57,23 +76,8 @@ const Navbar = ({ onToggleSidebar }) => {
           {pageTitle}
         </Typography>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ display: { xs: 'none', sm: 'block' } }}
-          >
-            {currentDate}
-          </Typography>
-
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography
-              variant="body2"
-              fontWeight={500}
-              sx={{ display: { xs: 'none', sm: 'block' } }}
-            >
-              {user?.firstName} {user?.lastName}
-            </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <IconButton onClick={handleAvatarClick} sx={{ p: 0 }}>
             <Avatar
               sx={{
                 width: 34,
@@ -81,13 +85,67 @@ const Navbar = ({ onToggleSidebar }) => {
                 bgcolor: 'primary.main',
                 fontSize: '0.8rem',
                 fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              {user?.firstName?.[0]}
+              {user?.lastName?.[0]}
+            </Avatar>
+          </IconButton>
+          <Typography variant="caption" fontWeight={500} sx={{ lineHeight: 1.2, mt: 0.3 }}>
+            {user?.firstName} {user?.lastName}
+          </Typography>
+        </Box>
+
+        <Menu
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          PaperProps={{
+            elevation: 2,
+            sx: {
+              mt: 1,
+              minWidth: 220,
+              borderRadius: 2,
+              border: '1px solid',
+              borderColor: 'grey.200',
+            },
+          }}
+        >
+          <Box sx={{ px: 2, py: 2, textAlign: 'center' }}>
+            <Avatar
+              sx={{
+                width: 48,
+                height: 48,
+                bgcolor: 'primary.main',
+                fontSize: '1.1rem',
+                fontWeight: 700,
+                mx: 'auto',
               }}
             >
               {user?.firstName?.[0]}
               {user?.lastName?.[0]}
             </Avatar>
           </Box>
-        </Box>
+
+          <Divider />
+
+          <MenuItem onClick={handleProfile} sx={{ py: 1.5 }}>
+            <ListItemIcon>
+              <Person fontSize="small" />
+            </ListItemIcon>
+            My Profile
+          </MenuItem>
+
+          <MenuItem onClick={handleLogout} sx={{ py: 1.5 }}>
+            <ListItemIcon>
+              <LogoutIcon fontSize="small" />
+            </ListItemIcon>
+            Logout
+          </MenuItem>
+        </Menu>
       </Toolbar>
     </AppBar>
   );

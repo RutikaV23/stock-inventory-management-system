@@ -7,7 +7,6 @@ import StockIn from '../pages/StockIn';
 import StockOut from '../pages/StockOut';
 import Reports from '../pages/Reports';
 import Profile from '../pages/Profile';
-import ChangePassword from '../pages/ChangePassword';
 import PrivateRoute from './PrivateRoute';
 
 const AppRoutes = () => {
@@ -22,7 +21,6 @@ const AppRoutes = () => {
           <Route path="/stock-out" element={<StockOut />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/change-password" element={<ChangePassword />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
