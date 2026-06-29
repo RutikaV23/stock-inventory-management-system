@@ -8,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import formatCurrency from '../../utils/formatCurrency';
 
 const data = [
   { month: 'Jan', value: 45000 },
@@ -37,16 +38,16 @@ const InventoryChart = () => {
         Inventory Value
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Monthly inventory value trend (USD)
+        Monthly inventory value trend (INR)
       </Typography>
       <Box sx={{ width: '100%', height: 260 }}>
         <ResponsiveContainer>
           <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis dataKey="month" tick={{ fontSize: 12 }} stroke="#9e9e9e" />
-            <YAxis tick={{ fontSize: 12 }} stroke="#9e9e9e" tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+            <YAxis tick={{ fontSize: 12 }} stroke="#9e9e9e" tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
             <Tooltip
-              formatter={(value) => [`$${value.toLocaleString()}`, 'Value']}
+              formatter={(value) => [formatCurrency(value), 'Value']}
               contentStyle={{ borderRadius: 8, border: '1px solid #e0e0e0' }}
             />
             <Line

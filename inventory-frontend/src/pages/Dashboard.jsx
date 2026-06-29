@@ -20,6 +20,7 @@ import {
   AssessmentOutlined,
 } from '@mui/icons-material';
 import { getProducts } from '../api/productApi';
+import formatCurrency from '../utils/formatCurrency';
 import StatCard from '../components/dashboard/StatCard';
 import InventoryChart from '../components/dashboard/InventoryChart';
 import StockStatusChart from '../components/dashboard/StockStatusChart';
@@ -154,7 +155,7 @@ const Dashboard = () => {
             <StatCard
               icon={icons.value}
               title="Inventory Value"
-              value={`$${stats.totalValue.toLocaleString()}`}
+              value={formatCurrency(stats.totalValue)}
               description="Total worth"
               color="#7b1fa2"
             />

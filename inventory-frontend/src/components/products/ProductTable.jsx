@@ -19,13 +19,8 @@ import {
   Delete as DeleteIcon,
 } from '@mui/icons-material';
 
-const formatPrice = (price) => {
-  if (price == null) return '-';
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(price);
-};
+import formatCurrency from '../../utils/formatCurrency';
+
 
 const ProductTable = ({
   products = [],
@@ -114,7 +109,7 @@ const ProductTable = ({
                   </Tooltip>
                 </TableCell>
                 <TableCell align="right">
-                  {formatPrice(product.price)}
+                  {formatCurrency(product.price)}
                 </TableCell>
                 <TableCell align="right">{product.stockQuantity ?? '-'}</TableCell>
                 <TableCell>
