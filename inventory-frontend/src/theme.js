@@ -36,6 +36,20 @@ const theme = createTheme({
         size: 'medium',
       },
     },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+        },
+      },
+    },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          borderRight: 'none',
+        },
+      },
+    },
   },
 });
 
