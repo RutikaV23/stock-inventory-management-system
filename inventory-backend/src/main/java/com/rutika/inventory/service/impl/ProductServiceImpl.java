@@ -59,8 +59,8 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> productPage;
         if (keyword != null && !keyword.isBlank()) {
             productPage = productRepository
-                    .findByNameContainingIgnoreCaseOrSkuContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
-                            keyword, keyword, keyword, pageable);
+                    .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                            keyword, keyword, pageable);
         } else {
             productPage = productRepository.findAll(pageable);
         }

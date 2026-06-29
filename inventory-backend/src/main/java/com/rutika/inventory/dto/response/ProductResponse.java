@@ -21,14 +21,14 @@ public class ProductResponse {
     @Schema(description = "Product description", example = "Ergonomic wireless mouse with USB receiver")
     private String description;
 
-    @Schema(description = "Stock Keeping Unit", example = "WM-001")
-    private String sku;
-
     @Schema(description = "Product price", example = "29.99")
     private BigDecimal price;
 
     @Schema(description = "Current stock quantity", example = "150")
     private Integer stockQuantity;
+
+    @Schema(description = "Minimum stock level before reorder is recommended", example = "2")
+    private Integer minimumStock;
 
     @Schema(description = "Product status", example = "ACTIVE", allowableValues = {"ACTIVE", "INACTIVE", "DISCONTINUED"})
     private String status;

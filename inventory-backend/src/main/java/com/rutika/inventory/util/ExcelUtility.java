@@ -18,7 +18,7 @@ public class ExcelUtility {
 
             String[] columns = {
                 "Product Name", "Description", "Price",
-                "Stock Quantity", "Reorder Level", "Status", "Created At"
+                "Stock Quantity", "Minimum Stock", "Status", "Created At"
             };
 
             CellStyle headerStyle = workbook.createCellStyle();
@@ -40,7 +40,7 @@ public class ExcelUtility {
                 row.createCell(1).setCellValue(product.getDescription());
                 row.createCell(2).setCellValue(product.getPrice() != null ? product.getPrice().doubleValue() : 0);
                 row.createCell(3).setCellValue(product.getStockQuantity());
-                row.createCell(4).setCellValue(product.getReorderLevel() != null ? product.getReorderLevel() : 0);
+                row.createCell(4).setCellValue(product.getMinimumStock() != null ? product.getMinimumStock() : 0);
                 row.createCell(5).setCellValue(product.getStatus() != null ? product.getStatus().name() : "");
                 row.createCell(6).setCellValue(product.getCreatedAt() != null ? product.getCreatedAt().toString() : "");
             }

@@ -33,17 +33,14 @@ public class Product {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "sku", nullable = false, unique = true)
-    private String sku;
-
     @Column(name = "price", precision = 10, scale = 2)
     private BigDecimal price;
 
     @Column(name = "stock_quantity", nullable = false)
     private Integer stockQuantity;
 
-    @Column(name = "reorder_level")
-    private Integer reorderLevel;
+    @Column(name = "minimum_stock")
+    private Integer minimumStock;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -68,6 +65,9 @@ public class Product {
         }
         if (this.stockQuantity == null) {
             this.stockQuantity = 0;
+        }
+        if (this.minimumStock == null) {
+            this.minimumStock = 2;
         }
     }
 

@@ -8,21 +8,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
 public interface ProductRepository extends JpaRepository<Product, String> {
 
-    Optional<Product> findBySku(String sku);
-
-    boolean existsBySku(String sku);
-
-    Page<Product> findByNameContainingIgnoreCaseOrSkuContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
-            String name, String sku, String description, Pageable pageable);
+    Page<Product> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+            String name, String description, Pageable pageable);
 
     long countByStatus(ProductStatus status);
 
-    @Query("SELECT COUNT(p) FROM Product p WHERE p.stockQuantity <= p.reorderLevel")
+    @Query("SELECT COUNT(p) FROM Product p WHERE p.stockQuantity <= p.minimumStock")
     long countLowStockProducts();
 
     @Query("SELECT COUNT(p) FROM Product p WHERE p.stockQuantity = 0")

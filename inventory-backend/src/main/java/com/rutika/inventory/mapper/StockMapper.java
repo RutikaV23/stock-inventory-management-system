@@ -26,7 +26,6 @@ public class StockMapper {
         response.setId(stockIn.getId());
         response.setProductId(stockIn.getProduct().getId());
         response.setProductName(stockIn.getProduct().getName());
-        response.setProductSku(stockIn.getProduct().getSku());
         response.setQuantity(stockIn.getQuantity());
         response.setReferenceNumber(stockIn.getReferenceNumber());
         response.setNotes(stockIn.getNotes());
@@ -47,7 +46,6 @@ public class StockMapper {
         response.setId(stockOut.getId());
         response.setProductId(stockOut.getProduct().getId());
         response.setProductName(stockOut.getProduct().getName());
-        response.setProductSku(stockOut.getProduct().getSku());
         response.setQuantity(stockOut.getQuantity());
         response.setReason(stockOut.getReason());
         response.setReferenceNumber(stockOut.getReferenceNumber());
@@ -60,7 +58,6 @@ public class StockMapper {
         response.setId(stockIn.getId());
         response.setProductId(stockIn.getProduct().getId());
         response.setProductName(stockIn.getProduct().getName());
-        response.setSku(stockIn.getProduct().getSku());
         response.setQuantity(stockIn.getQuantity());
         response.setCurrentStock(stockIn.getProduct().getStockQuantity());
         response.setSupplierName(null);

@@ -12,9 +12,8 @@ public class ProductMapper {
         Product product = new Product();
         product.setName(request.getName());
         product.setDescription(request.getDescription());
-        product.setSku(request.getSku());
         product.setPrice(request.getPrice());
-        product.setReorderLevel(request.getReorderLevel());
+        product.setStockQuantity(request.getStockQuantity());
         return product;
     }
 
@@ -23,9 +22,9 @@ public class ProductMapper {
         response.setId(product.getId());
         response.setName(product.getName());
         response.setDescription(product.getDescription());
-        response.setSku(product.getSku());
         response.setPrice(product.getPrice());
         response.setStockQuantity(product.getStockQuantity());
+        response.setMinimumStock(product.getMinimumStock());
         response.setStatus(product.getStatus().name());
         response.setCreatedAt(product.getCreatedAt());
         response.setUpdatedAt(product.getUpdatedAt());
@@ -36,6 +35,6 @@ public class ProductMapper {
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
-        product.setReorderLevel(request.getReorderLevel());
+        product.setStockQuantity(request.getStockQuantity());
     }
 }

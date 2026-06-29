@@ -45,7 +45,7 @@ public class ProductController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new product",
-               description = "Creates a new product with the provided details. The SKU must be unique.")
+               description = "Creates a new product with the provided details.")
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
                 responseCode = "201",
@@ -60,7 +60,6 @@ public class ProductController {
                                         "id": "550e8400-e29b-41d4-a716-446655440000",
                                         "name": "Wireless Mouse",
                                         "description": "Ergonomic wireless mouse with USB receiver",
-                                        "sku": "WM-001",
                                         "price": 29.99,
                                         "stockQuantity": 0,
                                         "status": "ACTIVE",
@@ -84,12 +83,12 @@ public class ProductController {
                                 """))),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
                 responseCode = "409",
-                description = "A product with the given SKU already exists",
+                description = "A product with the given name already exists",
                 content = @Content(mediaType = "application/json",
                         examples = @ExampleObject(value = """
                                 {
                                     "success": false,
-                                    "message": "Product already exists with SKU: WM-001",
+                                    "message": "Product already exists",
                                     "data": null,
                                     "timestamp": "2026-06-27T10:30:00Z"
                                 }
@@ -121,7 +120,6 @@ public class ProductController {
                                         "id": "550e8400-e29b-41d4-a716-446655440000",
                                         "name": "Wireless Mouse",
                                         "description": "Ergonomic wireless mouse with USB receiver",
-                                        "sku": "WM-001",
                                         "price": 29.99,
                                         "stockQuantity": 150,
                                         "status": "ACTIVE",
@@ -160,7 +158,7 @@ public class ProductController {
         @Parameter(name = "page", description = "Page number (zero-based)", example = "0"),
         @Parameter(name = "size", description = "Number of items per page", example = "10"),
         @Parameter(name = "sort", description = "Sort field and direction (e.g., name,asc or price,desc)", example = "id,asc"),
-        @Parameter(name = "keyword", description = "Search keyword (matches name, SKU, or description)", example = "mouse")
+        @Parameter(name = "keyword", description = "Search keyword (matches name or description)", example = "mouse")
     })
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -177,7 +175,6 @@ public class ProductController {
                                                 "id": "550e8400-e29b-41d4-a716-446655440000",
                                                 "name": "Wireless Mouse",
                                                 "description": "Ergonomic wireless mouse with USB receiver",
-                                                "sku": "WM-001",
                                                 "price": 29.99,
                                                 "stockQuantity": 150,
                                                 "status": "ACTIVE",
@@ -226,7 +223,6 @@ public class ProductController {
                                         "id": "550e8400-e29b-41d4-a716-446655440000",
                                         "name": "Wireless Mouse Pro",
                                         "description": "Updated ergonomic wireless mouse with USB receiver",
-                                        "sku": "WM-002",
                                         "price": 39.99,
                                         "stockQuantity": 150,
                                         "status": "ACTIVE",
@@ -262,12 +258,12 @@ public class ProductController {
                                 """))),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
                 responseCode = "409",
-                description = "A product with the given SKU already exists",
+                description = "A product with the given name already exists",
                 content = @Content(mediaType = "application/json",
                         examples = @ExampleObject(value = """
                                 {
                                     "success": false,
-                                    "message": "Product already exists with SKU: WM-002",
+                                    "message": "Product already exists",
                                     "data": null,
                                     "timestamp": "2026-06-27T10:30:00Z"
                                 }
@@ -325,7 +321,7 @@ public class ProductController {
 
     @GetMapping("/export/excel")
     @Operation(summary = "Export products to Excel",
-               description = "Exports all products as an Excel (.xlsx) file with columns: Product Name, Description, Price, Stock Quantity, Reorder Level, Status, Created At")
+               description = "Exports all products as an Excel (.xlsx) file with columns: Product Name, Description, Price, Stock Quantity, Minimum Stock, Status, Created At")
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
                 responseCode = "200",

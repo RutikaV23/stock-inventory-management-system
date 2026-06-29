@@ -10,12 +10,10 @@ import {
   CircularProgress,
 } from '@mui/material';
 
-const generateSku = () =>
-  `SKU-${Date.now()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-
 const initialForm = {
   name: '',
   price: '',
+  stockQuantity: '',
   description: '',
 };
 
@@ -31,6 +29,7 @@ const ProductFormDialog = ({ open, onClose, onSave, product, loading }) => {
           setForm({
             name: product.name || '',
             price: product.price ?? '',
+            stockQuantity: product.stockQuantity ?? '',
             description: product.description || '',
           });
         } else {
@@ -48,8 +47,13 @@ const ProductFormDialog = ({ open, onClose, onSave, product, loading }) => {
     }
     if (form.price === '' || form.price == null) {
       newErrors.price = 'Price is required';
-    } else if (Number(form.price) < 0 || !Number.isFinite(Number(form.price))) {
-      newErrors.price = 'Must be a valid number >= 0';
+    } else if (Number(form.price) <= 0 || !Number.isFinite(Number(form.price))) {
+      newErrors.price = 'Must be greater than 0';
+    }
+    if (form.stockQuantity === '' || form.stockQuantity == null) {
+      newErrors.stockQuantity = 'Stock quantity is required';
+    } else if (!Number.isInteger(Number(form.stockQuantity)) || Number(form.stockQuantity) < 0) {
+      newErrors.stockQuantity = 'Must be a non-negative integer';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -68,9 +72,8 @@ const ProductFormDialog = ({ open, onClose, onSave, product, loading }) => {
 
     const payload = {
       name: form.name.trim(),
-      sku: isEdit ? product.sku : generateSku(),
       price: Number(form.price),
-      reorderLevel: 0,
+      stockQuantity: Number(form.stockQuantity),
       description: form.description.trim(),
     };
 
@@ -102,6 +105,19 @@ const ProductFormDialog = ({ open, onClose, onSave, product, loading }) => {
             helperText={errors.name}
             required
             autoFocus
+            sx={{ mb: 2 }}
+          />
+
+          <TextField
+            fullWidth
+            label="Stock Quantity"
+            type="number"
+            value={form.stockQuantity}
+            onChange={handleChange('stockQuantity')}
+            error={!!errors.stockQuantity}
+            helperText={errors.stockQuantity}
+            required
+            inputProps={{ min: '0', step: '1' }}
             sx={{ mb: 2 }}
           />
 
