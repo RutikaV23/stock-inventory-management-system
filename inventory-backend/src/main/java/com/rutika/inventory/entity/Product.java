@@ -1,13 +1,21 @@
 package com.rutika.inventory.entity;
 
-import com.rutika.inventory.enums.ProductStatus;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
+
+import com.rutika.inventory.enums.ProductStatus;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -68,3 +76,4 @@ public class Product {
         this.updatedAt = Instant.now();
     }
 }
+
