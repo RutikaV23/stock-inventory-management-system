@@ -110,14 +110,18 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional(readOnly = true)
     public UserProfileResponse getProfile() {
-        User user = securityUtil.getCurrentUser();
+        String userId = securityUtil.getCurrentUser().getId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         return toUserProfileResponse(user);
     }
 
     @Override
     @Transactional
     public UserProfileResponse updateProfile(UpdateProfileRequest request) {
-        User user = securityUtil.getCurrentUser();
+        String userId = securityUtil.getCurrentUser().getId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setPhone(request.getPhone());
@@ -128,7 +132,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void changePassword(ChangePasswordRequest request) {
-        User user = securityUtil.getCurrentUser();
+        String userId = securityUtil.getCurrentUser().getId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new BadRequestException("Current password is incorrect");

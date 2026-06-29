@@ -5,9 +5,11 @@ import com.rutika.inventory.dto.request.LoginRequest;
 import com.rutika.inventory.dto.request.RefreshTokenRequest;
 import com.rutika.inventory.dto.request.UpdateProfileRequest;
 import com.rutika.inventory.entity.RefreshToken;
+import com.rutika.inventory.entity.Role;
 import com.rutika.inventory.entity.User;
 import com.rutika.inventory.enums.UserStatus;
 import com.rutika.inventory.repository.RefreshTokenRepository;
+import com.rutika.inventory.repository.RoleRepository;
 import com.rutika.inventory.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +41,11 @@ class AuthIntegrationTests {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
+    private Role defaultRole;
+
     private RestClient rest;
 
     @BeforeEach
@@ -48,6 +55,13 @@ class AuthIntegrationTests {
                 .ifPresent(user -> {
                     refreshTokenRepository.deleteByUserId(user.getId());
                     userRepository.delete(user);
+                });
+
+        defaultRole = roleRepository.findByRoleName("SUPER_ADMIN")
+                .orElseGet(() -> {
+                    Role role = new Role();
+                    role.setRoleName("SUPER_ADMIN");
+                    return roleRepository.save(role);
                 });
 
         rest = RestClient.create("http://localhost:" + port);
@@ -130,6 +144,7 @@ class AuthIntegrationTests {
         inactiveUser.setEmail("inactive@example.com");
         inactiveUser.setPassword(passwordEncoder.encode("TestPass123"));
         inactiveUser.setStatus(UserStatus.INACTIVE);
+        inactiveUser.setRole(defaultRole);
         userRepository.save(inactiveUser);
 
         LoginRequest request = new LoginRequest();
@@ -461,6 +476,7 @@ class AuthIntegrationTests {
         testUser.setEmail("password-test@example.com");
         testUser.setPassword(passwordEncoder.encode("OldPass123"));
         testUser.setStatus(UserStatus.ACTIVE);
+        testUser.setRole(defaultRole);
         userRepository.save(testUser);
 
         LoginRequest loginReq = new LoginRequest();

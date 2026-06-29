@@ -13,8 +13,8 @@ import java.time.Instant;
 public class Role {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id", length = 36, nullable = false, updatable = false)
+    private String id;
 
     @Column(name = "role_name", nullable = false, unique = true)
     private String roleName;
@@ -24,6 +24,9 @@ public class Role {
 
     @PrePersist
     public void prePersist() {
+        if (this.id == null) {
+            this.id = java.util.UUID.randomUUID().toString();
+        }
         this.createdAt = Instant.now();
     }
 }

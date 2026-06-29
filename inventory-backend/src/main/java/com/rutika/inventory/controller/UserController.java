@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,6 +25,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     @Secured("USER_CREATE")
     @Operation(summary = "Create a new user", description = "Creates a new user with encrypted password. Only SUPER_ADMIN can create users.")
     public ApiResponse<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
