@@ -17,6 +17,7 @@ import {
   ArrowCircleDown as StockInIcon,
   ArrowCircleUp as StockOutIcon,
   Assessment as ReportsIcon,
+  People as PeopleIcon,
   Inventory2Outlined,
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
@@ -27,6 +28,7 @@ const COLLAPSED_WIDTH = 72;
 const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
   { text: 'Products', icon: <InventoryIcon />, path: '/products' },
+  { text: 'Users', icon: <PeopleIcon />, path: '/users' },
   { text: 'Stock In', icon: <StockInIcon />, path: '/stock-in' },
   { text: 'Stock Out', icon: <StockOutIcon />, path: '/stock-out' },
   { text: 'Reports', icon: <ReportsIcon />, path: '/reports' },

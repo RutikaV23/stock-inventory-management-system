@@ -18,6 +18,7 @@ import { useAuth } from '../../context/AuthContext';
 const pageTitles = {
   '/': 'Dashboard',
   '/products': 'Products',
+  '/users': 'Users',
   '/stock-in': 'Stock In',
   '/stock-out': 'Stock Out',
   '/reports': 'Reports',

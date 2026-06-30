@@ -3,6 +3,7 @@ import MainLayout from '../layouts/MainLayout';
 import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
 import Products from '../pages/Products';
+import Users from '../pages/Users';
 import StockIn from '../pages/StockIn';
 import StockOut from '../pages/StockOut';
 import Reports from '../pages/Reports';
@@ -17,6 +18,7 @@ const AppRoutes = () => {
         <Route element={<PrivateRoute />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/users" element={<Users />} />
           <Route path="/stock-in" element={<StockIn />} />
           <Route path="/stock-out" element={<StockOut />} />
           <Route path="/reports" element={<Reports />} />
