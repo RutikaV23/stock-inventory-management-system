@@ -58,6 +58,9 @@ const ProductTable = ({
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
+                Sr. No.
+              </TableCell>
+              <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
                 Product Name
               </TableCell>
               <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
@@ -87,12 +90,15 @@ const ProductTable = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {products.map((product) => (
+            {products.map((product, index) => (
               <TableRow
                 key={product.id}
                 hover
                 sx={{ '&:last-child td': { borderBottom: 0 } }}
               >
+                <TableCell sx={{ fontWeight: 500 }}>
+                  {page * 10 + index + 1}
+                </TableCell>
                 <TableCell sx={{ fontWeight: 500 }}>
                   {product.name}
                 </TableCell>

@@ -92,7 +92,7 @@ const StockHistoryTable = ({
                     align={col.align || 'left'}
                     sx={col.sx}
                   >
-                    {col.render ? col.render(row) : row[col.key] ?? '-'}
+                    {col.render ? col.render(row, index) : row[col.key] ?? '-'}
                   </TableCell>
                 ))}
               </TableRow>

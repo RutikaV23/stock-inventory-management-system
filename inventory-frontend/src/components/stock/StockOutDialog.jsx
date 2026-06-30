@@ -9,14 +9,15 @@ import {
   Button,
   CircularProgress,
   Autocomplete,
+  Alert,
 } from '@mui/material';
 import { getProducts } from '../../api/productApi';
 
 const initialForm = {
   product: null,
   quantity: '',
+  performedBy: '',
   reason: '',
-  referenceNumber: '',
 };
 
 const StockOutDialog = ({ open, onClose, onSave, loading }) => {
@@ -24,9 +25,11 @@ const StockOutDialog = ({ open, onClose, onSave, loading }) => {
   const [errors, setErrors] = useState({});
   const [products, setProducts] = useState([]);
   const [productsLoading, setProductsLoading] = useState(false);
+  const [fetchError, setFetchError] = useState('');
 
   const fetchProducts = async () => {
     setProductsLoading(true);
+    setFetchError('');
     try {
       const { data } = await getProducts({ page: 0, size: 1000, status: 'ACTIVE' });
       const responseData = data.data;
@@ -39,6 +42,7 @@ const StockOutDialog = ({ open, onClose, onSave, loading }) => {
       }
     } catch {
       setProducts([]);
+      setFetchError('Failed to load products. Please try again.');
     } finally {
       setProductsLoading(false);
     }
@@ -60,11 +64,11 @@ const StockOutDialog = ({ open, onClose, onSave, loading }) => {
     } else if (!Number.isInteger(Number(form.quantity)) || Number(form.quantity) <= 0) {
       newErrors.quantity = 'Must be a positive integer';
     }
+    if (!form.performedBy.trim()) {
+      newErrors.performedBy = 'Performed by is required';
+    }
     if (!form.reason.trim()) {
       newErrors.reason = 'Reason is required';
-    }
-    if (!form.referenceNumber.trim()) {
-      newErrors.referenceNumber = 'Reference number is required';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -84,8 +88,8 @@ const StockOutDialog = ({ open, onClose, onSave, loading }) => {
     const payload = {
       productId: form.product.id,
       quantity: Number(form.quantity),
+      performedBy: form.performedBy.trim(),
       reason: form.reason.trim(),
-      referenceNumber: form.referenceNumber.trim(),
     };
 
     onSave(payload);
@@ -112,6 +116,11 @@ const StockOutDialog = ({ open, onClose, onSave, loading }) => {
 
       <Box component="form" onSubmit={handleSubmit} noValidate>
         <DialogContent sx={{ pt: 1 }}>
+          {fetchError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {fetchError}
+            </Alert>
+          )}
           <Autocomplete
             fullWidth
             options={products}
@@ -124,7 +133,7 @@ const StockOutDialog = ({ open, onClose, onSave, loading }) => {
               }
             }}
             getOptionLabel={(option) => option.name || ''}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
+            isOptionEqualToValue={(option, value) => value ? option.id === value.id : false}
             noOptionsText="No active products available"
             renderInput={(params) => (
               <TextField
@@ -133,16 +142,14 @@ const StockOutDialog = ({ open, onClose, onSave, loading }) => {
                 required
                 error={!!errors.product}
                 helperText={errors.product}
-                slotProps={{
-                  input: {
-                    ...params.slotProps?.input,
-                    endAdornment: (
-                      <>
-                        {productsLoading ? <CircularProgress size={20} /> : null}
-                        {params.slotProps?.input?.endAdornment}
-                      </>
-                    ),
-                  },
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <>
+                      {productsLoading ? <CircularProgress size={20} /> : null}
+                      {params.InputProps?.endAdornment}
+                    </>
+                  ),
                 }}
               />
             )}
@@ -164,6 +171,18 @@ const StockOutDialog = ({ open, onClose, onSave, loading }) => {
 
           <TextField
             fullWidth
+            label="Performed By"
+            value={form.performedBy}
+            onChange={handleChange('performedBy')}
+            error={!!errors.performedBy}
+            helperText={errors.performedBy}
+            required
+            placeholder="Enter person name"
+            sx={{ mb: 2 }}
+          />
+
+          <TextField
+            fullWidth
             label="Reason"
             value={form.reason}
             onChange={handleChange('reason')}
@@ -173,16 +192,6 @@ const StockOutDialog = ({ open, onClose, onSave, loading }) => {
             sx={{ mb: 2 }}
           />
 
-          <TextField
-            fullWidth
-            label="Reference Number"
-            value={form.referenceNumber}
-            onChange={handleChange('referenceNumber')}
-            error={!!errors.referenceNumber}
-            helperText={errors.referenceNumber}
-            required
-            sx={{ mb: 1 }}
-          />
         </DialogContent>
 
         <DialogActions sx={{ px: 3, pb: 2 }}>

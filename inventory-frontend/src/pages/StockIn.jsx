@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, startTransition } from 'react';
+import { useState, useEffect, useCallback, useMemo, startTransition } from 'react';
 import {
   Box,
   Button,
@@ -18,29 +18,6 @@ import StockHistoryTable from '../components/stock/StockHistoryTable';
 import StockInDialog from '../components/stock/StockInDialog';
 import { stockIn, getStockInHistory } from '../api/stockApi';
 
-const columns = [
-  { key: 'productName', label: 'Product Name' },
-  { key: 'quantity', label: 'Quantity', align: 'right' },
-  { key: 'currentStock', label: 'Current Stock', align: 'right' },
-  { key: 'referenceNumber', label: 'Reference Number' },
-  { key: 'notes', label: 'Notes / Remarks' },
-  {
-    key: 'stockInDate',
-    label: 'Stock In Date',
-    render: (row) => {
-      if (!row.stockInDate && !row.createdAt) return '-';
-      const date = row.stockInDate || row.createdAt;
-      return new Date(date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    },
-  },
-];
-
 const StockIn = () => {
   const [rows, setRows] = useState([]);
   const [total, setTotal] = useState(0);
@@ -53,6 +30,34 @@ const StockIn = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const totalPages = Math.ceil(total / 10) || 0;
+
+  const columns = useMemo(() => [
+    {
+      key: 'srNo',
+      label: 'Sr. No.',
+      render: (_, index) => page * 10 + index + 1,
+    },
+    { key: 'productName', label: 'Product Name' },
+    { key: 'quantity', label: 'Quantity', align: 'right' },
+    { key: 'currentStock', label: 'Current Stock', align: 'right' },
+    { key: 'performedBy', label: 'Performed By', render: (row) => row.performedBy || '-' },
+    { key: 'notes', label: 'Notes / Remarks' },
+    {
+      key: 'stockInDate',
+      label: 'Stock In Date',
+      render: (row) => {
+        if (!row.stockInDate && !row.createdAt) return '-';
+        const date = row.stockInDate || row.createdAt;
+        return new Date(date).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+      },
+    },
+  ], [page]);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
