@@ -3,6 +3,7 @@ package com.rutika.inventory.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +33,8 @@ public class CreateUserRequest {
     @Schema(description = "User's password", example = "password123")
     private String password;
 
-    @Schema(description = "User's phone number", example = "+1234567890")
+    @Pattern(regexp = "^[0-9]{10}$", message = "Phone must be exactly 10 digits")
+    @Schema(description = "User's phone number (10 digits)", example = "9876543210")
     private String phone;
 
     @NotBlank(message = "Role name is required")

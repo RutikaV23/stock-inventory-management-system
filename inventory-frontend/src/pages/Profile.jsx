@@ -23,6 +23,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { getProfile, updateProfile, changePassword } from '../api/authApi';
+import { toSentenceCase } from '../utils/sentenceCase';
 
 const Profile = () => {
   const { user } = useAuth();
@@ -32,6 +33,7 @@ const Profile = () => {
   const [changingPw, setChangingPw] = useState(false);
 
   const [form, setForm] = useState({ firstName: '', lastName: '', phone: '' });
+  const [formErrors, setFormErrors] = useState({});
   const [pwForm, setPwForm] = useState({
     currentPassword: '',
     newPassword: '',
@@ -64,14 +66,41 @@ const Profile = () => {
 
   const handleChange = (field) => (e) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    if (formErrors[field]) {
+      setFormErrors((prev) => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const handleBlur = (field) => () => {
+    setForm((prev) => ({ ...prev, [field]: toSentenceCase(prev[field]) }));
+  };
+
+  const handlePhoneChange = (e) => {
+    const cleaned = e.target.value.replace(/\D/g, '').slice(0, 10);
+    setForm((prev) => ({ ...prev, phone: cleaned }));
+    if (formErrors.phone) {
+      setFormErrors((prev) => ({ ...prev, phone: '' }));
+    }
   };
 
   const handleSave = async () => {
+    const errs = {};
+    if (form.phone.trim() && !/^[0-9]{10}$/.test(form.phone.trim())) {
+      errs.phone = 'Phone must be exactly 10 digits';
+    }
+    setFormErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
     setSaving(true);
     setError('');
     setSuccess('');
     try {
-      const { data } = await updateProfile(form);
+      const payload = {
+        firstName: toSentenceCase(form.firstName.trim()),
+        lastName: toSentenceCase(form.lastName.trim()),
+        phone: form.phone.trim(),
+      };
+      const { data } = await updateProfile(payload);
       setProfile(data.data);
       setSuccess('Profile updated successfully');
     } catch (err) {
@@ -87,6 +116,7 @@ const Profile = () => {
       lastName: profile?.lastName || '',
       phone: profile?.phone || '',
     });
+    setFormErrors({});
     setError('');
     setSuccess('');
   };
@@ -228,6 +258,7 @@ const Profile = () => {
                 label="First Name"
                 value={form.firstName}
                 onChange={handleChange('firstName')}
+                onBlur={handleBlur('firstName')}
                 fullWidth
                 size="small"
               />
@@ -237,6 +268,7 @@ const Profile = () => {
                 label="Last Name"
                 value={form.lastName}
                 onChange={handleChange('lastName')}
+                onBlur={handleBlur('lastName')}
                 fullWidth
                 size="small"
               />
@@ -255,9 +287,12 @@ const Profile = () => {
               <TextField
                 label="Phone Number"
                 value={form.phone}
-                onChange={handleChange('phone')}
+                onChange={handlePhoneChange}
+                error={!!formErrors.phone}
+                helperText={formErrors.phone}
                 fullWidth
                 size="small"
+                inputProps={{ maxLength: 10 }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>

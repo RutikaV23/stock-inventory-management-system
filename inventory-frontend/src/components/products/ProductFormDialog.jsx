@@ -9,6 +9,7 @@ import {
   Button,
   CircularProgress,
 } from '@mui/material';
+import { toSentenceCase } from '../../utils/sentenceCase';
 
 const initialForm = {
   name: '',
@@ -66,12 +67,16 @@ const ProductFormDialog = ({ open, onClose, onSave, product, loading }) => {
     }
   };
 
+  const handleBlur = (field) => () => {
+    setForm((prev) => ({ ...prev, [field]: toSentenceCase(prev[field]) }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     const payload = {
-      name: form.name.trim(),
+      name: toSentenceCase(form.name.trim()),
       price: Number(form.price),
       stockQuantity: Number(form.stockQuantity),
       description: form.description.trim(),
@@ -101,6 +106,7 @@ const ProductFormDialog = ({ open, onClose, onSave, product, loading }) => {
             label="Product Name"
             value={form.name}
             onChange={handleChange('name')}
+            onBlur={handleBlur('name')}
             error={!!errors.name}
             helperText={errors.name}
             required

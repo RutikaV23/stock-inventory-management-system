@@ -3,6 +3,7 @@ package com.rutika.inventory.mapper;
 import com.rutika.inventory.dto.request.ProductRequest;
 import com.rutika.inventory.dto.response.ProductResponse;
 import com.rutika.inventory.entity.Product;
+import com.rutika.inventory.util.SentenceCaseUtil;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -10,7 +11,7 @@ public class ProductMapper {
 
     public Product toEntity(ProductRequest request) {
         Product product = new Product();
-        product.setName(request.getName());
+        product.setName(SentenceCaseUtil.toSentenceCase(request.getName()));
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setStockQuantity(request.getStockQuantity());
@@ -32,7 +33,7 @@ public class ProductMapper {
     }
 
     public void updateEntityFromRequest(ProductRequest request, Product product) {
-        product.setName(request.getName());
+        product.setName(SentenceCaseUtil.toSentenceCase(request.getName()));
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setStockQuantity(request.getStockQuantity());

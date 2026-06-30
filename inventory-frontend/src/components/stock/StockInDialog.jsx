@@ -11,6 +11,7 @@ import {
   Autocomplete,
   Alert,
 } from '@mui/material';
+import { toSentenceCase } from '../../utils/sentenceCase';
 import { getProducts } from '../../api/productApi';
 
 const initialForm = {
@@ -78,6 +79,10 @@ const StockInDialog = ({ open, onClose, onSave, loading }) => {
     }
   };
 
+  const handleBlur = (field) => () => {
+    setForm((prev) => ({ ...prev, [field]: toSentenceCase(prev[field]) }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -85,8 +90,8 @@ const StockInDialog = ({ open, onClose, onSave, loading }) => {
     const payload = {
       productId: form.product.id,
       quantity: Number(form.quantity),
-      performedBy: form.performedBy.trim(),
-      notes: form.notes.trim(),
+      performedBy: toSentenceCase(form.performedBy.trim()),
+      notes: toSentenceCase(form.notes.trim()),
     };
 
     onSave(payload);
@@ -171,6 +176,7 @@ const StockInDialog = ({ open, onClose, onSave, loading }) => {
             label="Performed By"
             value={form.performedBy}
             onChange={handleChange('performedBy')}
+            onBlur={handleBlur('performedBy')}
             error={!!errors.performedBy}
             helperText={errors.performedBy}
             required
@@ -183,6 +189,7 @@ const StockInDialog = ({ open, onClose, onSave, loading }) => {
             label="Notes"
             value={form.notes}
             onChange={handleChange('notes')}
+            onBlur={handleBlur('notes')}
             multiline
             rows={3}
             sx={{ mb: 1 }}

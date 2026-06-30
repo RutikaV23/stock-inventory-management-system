@@ -12,6 +12,7 @@ import com.rutika.inventory.repository.RoleRepository;
 import com.rutika.inventory.repository.UserRepository;
 import com.rutika.inventory.response.PageResponse;
 import com.rutika.inventory.service.interfaces.UserService;
+import com.rutika.inventory.util.SentenceCaseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,8 +41,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new BadRequestException("Role not found: " + request.getRoleName()));
 
         User user = new User();
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
+        user.setFirstName(SentenceCaseUtil.toSentenceCase(request.getFirstName()));
+        user.setLastName(SentenceCaseUtil.toSentenceCase(request.getLastName()));
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setPhone(request.getPhone());
@@ -54,12 +55,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<UserResponse> getAllUsers(int page, int size, String sort, String keyword) {
+    public PageResponse<UserResponse> getAllUsers(int page, int size, String sort, String keyword, String status) {
         Sort sorting = Sort.by(Sort.Order.by(sort != null ? sort : "createdAt").with(Sort.Direction.DESC));
         Pageable pageable = PageRequest.of(page, size, sorting);
+        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
+        boolean hasStatus = status != null && !status.trim().isEmpty();
 
         Page<User> userPage;
-        if (keyword != null && !keyword.trim().isEmpty()) {
+        if (hasKeyword && hasStatus) {
+            userPage = userRepository.findByKeywordAndStatus(keyword.trim(), UserStatus.valueOf(status.trim().toUpperCase()), pageable);
+        } else if (hasStatus) {
+            userPage = userRepository.findByStatus(UserStatus.valueOf(status.trim().toUpperCase()), pageable);
+        } else if (hasKeyword) {
             userPage = userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
                     keyword.trim(), keyword.trim(), keyword.trim(), pageable);
         } else {
@@ -92,10 +99,10 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 
         if (request.getFirstName() != null) {
-            user.setFirstName(request.getFirstName());
+            user.setFirstName(SentenceCaseUtil.toSentenceCase(request.getFirstName()));
         }
         if (request.getLastName() != null) {
-            user.setLastName(request.getLastName());
+            user.setLastName(SentenceCaseUtil.toSentenceCase(request.getLastName()));
         }
         if (request.getPhone() != null) {
             user.setPhone(request.getPhone());

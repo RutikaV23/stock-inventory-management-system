@@ -35,13 +35,14 @@ public class UserController {
 
     @GetMapping
     @Secured("USER_READ")
-    @Operation(summary = "Get all users", description = "Retrieves all users with pagination, sorting, and keyword search support")
+    @Operation(summary = "Get all users", description = "Retrieves all users with pagination, sorting, keyword search, and status filter support")
     public ApiResponse<PageResponse<UserResponse>> getAllUsers(
             @RequestParam(defaultValue = ApiConstants.PAGE_DEFAULT) int page,
             @RequestParam(defaultValue = ApiConstants.SIZE_DEFAULT) int size,
             @RequestParam(required = false) String sort,
-            @RequestParam(required = false) String keyword) {
-        PageResponse<UserResponse> response = userService.getAllUsers(page, size, sort, keyword);
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String status) {
+        PageResponse<UserResponse> response = userService.getAllUsers(page, size, sort, keyword, status);
         return ApiResponse.success("Users retrieved successfully", response);
     }
 

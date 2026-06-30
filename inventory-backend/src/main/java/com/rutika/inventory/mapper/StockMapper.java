@@ -8,6 +8,7 @@ import com.rutika.inventory.dto.response.StockOutHistoryResponse;
 import com.rutika.inventory.dto.response.StockOutResponse;
 import com.rutika.inventory.entity.StockIn;
 import com.rutika.inventory.entity.StockOut;
+import com.rutika.inventory.util.SentenceCaseUtil;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,8 +17,8 @@ public class StockMapper {
     public StockIn toInEntity(StockInRequest request) {
         StockIn stockIn = new StockIn();
         stockIn.setQuantity(request.getQuantity());
-        stockIn.setPerformedBy(request.getPerformedBy());
-        stockIn.setNotes(request.getNotes());
+        stockIn.setPerformedBy(SentenceCaseUtil.toSentenceCase(request.getPerformedBy()));
+        stockIn.setNotes(SentenceCaseUtil.toSentenceCase(request.getNotes()));
         return stockIn;
     }
 
@@ -36,8 +37,8 @@ public class StockMapper {
     public StockOut toOutEntity(StockOutRequest request) {
         StockOut stockOut = new StockOut();
         stockOut.setQuantity(request.getQuantity());
-        stockOut.setPerformedBy(request.getPerformedBy());
-        stockOut.setReason(request.getReason());
+        stockOut.setPerformedBy(SentenceCaseUtil.toSentenceCase(request.getPerformedBy()));
+        stockOut.setReason(SentenceCaseUtil.toSentenceCase(request.getReason()));
         return stockOut;
     }
 

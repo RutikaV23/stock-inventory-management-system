@@ -17,6 +17,7 @@ import com.rutika.inventory.repository.UserRepository;
 import com.rutika.inventory.security.JwtService;
 import com.rutika.inventory.service.interfaces.AuthService;
 import com.rutika.inventory.util.SecurityUtil;
+import com.rutika.inventory.util.SentenceCaseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -122,8 +123,8 @@ public class AuthServiceImpl implements AuthService {
         String userId = securityUtil.getCurrentUser().getId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
+        user.setFirstName(SentenceCaseUtil.toSentenceCase(request.getFirstName()));
+        user.setLastName(SentenceCaseUtil.toSentenceCase(request.getLastName()));
         user.setPhone(request.getPhone());
         userRepository.save(user);
         return toUserProfileResponse(user);

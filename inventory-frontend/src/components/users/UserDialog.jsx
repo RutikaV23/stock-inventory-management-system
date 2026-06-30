@@ -13,6 +13,7 @@ import {
   InputLabel,
   Select,
 } from '@mui/material';
+import { toSentenceCase } from '../../utils/sentenceCase';
 
 const initialForm = {
   firstName: '',
@@ -72,6 +73,9 @@ const UserDialog = ({ open, onClose, onSave, user, loading }) => {
     if (!form.roleName) {
       newErrors.roleName = 'Role is required';
     }
+    if (form.phone.trim() && !/^[0-9]{10}$/.test(form.phone.trim())) {
+      newErrors.phone = 'Phone must be exactly 10 digits';
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -83,13 +87,25 @@ const UserDialog = ({ open, onClose, onSave, user, loading }) => {
     }
   };
 
+  const handleBlur = (field) => () => {
+    setForm((prev) => ({ ...prev, [field]: toSentenceCase(prev[field]) }));
+  };
+
+  const handlePhoneChange = (e) => {
+    const cleaned = e.target.value.replace(/\D/g, '').slice(0, 10);
+    setForm((prev) => ({ ...prev, phone: cleaned }));
+    if (errors.phone) {
+      setErrors((prev) => ({ ...prev, phone: '' }));
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     const payload = {
-      firstName: form.firstName.trim(),
-      lastName: form.lastName.trim(),
+      firstName: toSentenceCase(form.firstName.trim()),
+      lastName: toSentenceCase(form.lastName.trim()),
       phone: form.phone.trim(),
       roleName: form.roleName,
     };
@@ -125,6 +141,7 @@ const UserDialog = ({ open, onClose, onSave, user, loading }) => {
             label="First Name"
             value={form.firstName}
             onChange={handleChange('firstName')}
+            onBlur={handleBlur('firstName')}
             error={!!errors.firstName}
             helperText={errors.firstName}
             required
@@ -137,6 +154,7 @@ const UserDialog = ({ open, onClose, onSave, user, loading }) => {
             label="Last Name"
             value={form.lastName}
             onChange={handleChange('lastName')}
+            onBlur={handleBlur('lastName')}
             error={!!errors.lastName}
             helperText={errors.lastName}
             required
@@ -176,7 +194,10 @@ const UserDialog = ({ open, onClose, onSave, user, loading }) => {
             fullWidth
             label="Phone"
             value={form.phone}
-            onChange={handleChange('phone')}
+            onChange={handlePhoneChange}
+            error={!!errors.phone}
+            helperText={errors.phone || 'Exactly 10 digits'}
+            inputProps={{ maxLength: 10 }}
             sx={{ mb: 2 }}
           />
 

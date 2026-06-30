@@ -11,6 +11,7 @@ import {
   Autocomplete,
   Alert,
 } from '@mui/material';
+import { toSentenceCase } from '../../utils/sentenceCase';
 import { getProducts } from '../../api/productApi';
 
 const initialForm = {
@@ -81,6 +82,10 @@ const StockOutDialog = ({ open, onClose, onSave, loading }) => {
     }
   };
 
+  const handleBlur = (field) => () => {
+    setForm((prev) => ({ ...prev, [field]: toSentenceCase(prev[field]) }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -88,8 +93,8 @@ const StockOutDialog = ({ open, onClose, onSave, loading }) => {
     const payload = {
       productId: form.product.id,
       quantity: Number(form.quantity),
-      performedBy: form.performedBy.trim(),
-      reason: form.reason.trim(),
+      performedBy: toSentenceCase(form.performedBy.trim()),
+      reason: toSentenceCase(form.reason.trim()),
     };
 
     onSave(payload);
@@ -174,6 +179,7 @@ const StockOutDialog = ({ open, onClose, onSave, loading }) => {
             label="Performed By"
             value={form.performedBy}
             onChange={handleChange('performedBy')}
+            onBlur={handleBlur('performedBy')}
             error={!!errors.performedBy}
             helperText={errors.performedBy}
             required
@@ -186,6 +192,7 @@ const StockOutDialog = ({ open, onClose, onSave, loading }) => {
             label="Reason"
             value={form.reason}
             onChange={handleChange('reason')}
+            onBlur={handleBlur('reason')}
             error={!!errors.reason}
             helperText={errors.reason}
             required
