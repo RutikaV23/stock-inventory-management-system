@@ -201,8 +201,9 @@ public class ProductController {
             @RequestParam(defaultValue = ApiConstants.PAGE_DEFAULT) int page,
             @RequestParam(defaultValue = ApiConstants.SIZE_DEFAULT) int size,
             @RequestParam(defaultValue = ApiConstants.SORT_DEFAULT) String sort,
-            @RequestParam(required = false) String keyword) {
-        PageResponse<ProductResponse> response = productService.getAllProducts(page, size, sort, keyword);
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String status) {
+        PageResponse<ProductResponse> response = productService.getAllProducts(page, size, sort, keyword, status);
         return ApiResponse.success(MessageConstants.PRODUCT + MessageConstants.RETRIEVED_SUCCESS, response);
     }
 

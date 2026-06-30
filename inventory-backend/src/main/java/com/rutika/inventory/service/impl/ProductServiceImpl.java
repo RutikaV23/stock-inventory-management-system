@@ -47,7 +47,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ProductResponse> getAllProducts(int page, int size, String sort, String keyword) {
+    public PageResponse<ProductResponse> getAllProducts(int page, int size, String sort, String keyword, String status) {
         String[] sortParams = sort.split(",");
         String sortBy = sortParams[0];
         Sort.Direction sortDir = Sort.Direction.ASC;
@@ -56,8 +56,18 @@ public class ProductServiceImpl implements ProductService {
         }
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDir, sortBy));
 
+        boolean hasKeyword = keyword != null && !keyword.isBlank();
+        boolean hasStatus = status != null && !status.isBlank();
+
         Page<Product> productPage;
-        if (keyword != null && !keyword.isBlank()) {
+        if (hasKeyword && hasStatus) {
+            productPage = productRepository
+                    .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndStatus(
+                            keyword, keyword, ProductStatus.valueOf(status.toUpperCase()), pageable);
+        } else if (hasStatus) {
+            productPage = productRepository
+                    .findByStatus(ProductStatus.valueOf(status.toUpperCase()), pageable);
+        } else if (hasKeyword) {
             productPage = productRepository
                     .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
                             keyword, keyword, pageable);

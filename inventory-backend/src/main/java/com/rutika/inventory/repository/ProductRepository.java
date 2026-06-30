@@ -14,6 +14,11 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     Page<Product> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
             String name, String description, Pageable pageable);
 
+    Page<Product> findByStatus(ProductStatus status, Pageable pageable);
+
+    Page<Product> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndStatus(
+            String name, String description, ProductStatus status, Pageable pageable);
+
     long countByStatus(ProductStatus status);
 
     @Query("SELECT COUNT(p) FROM Product p WHERE p.stockQuantity <= p.minimumStock")

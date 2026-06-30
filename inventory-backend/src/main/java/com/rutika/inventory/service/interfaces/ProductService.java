@@ -10,7 +10,7 @@ public interface ProductService {
 
     ProductResponse getProductById(String id);
 
-    PageResponse<ProductResponse> getAllProducts(int page, int size, String sort, String keyword);
+    PageResponse<ProductResponse> getAllProducts(int page, int size, String sort, String keyword, String status);
 
     ProductResponse updateProduct(String id, ProductRequest request);
 

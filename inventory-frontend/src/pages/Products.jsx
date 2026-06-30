@@ -8,6 +8,10 @@ import {
   Typography,
   Snackbar,
   Alert,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -31,6 +35,7 @@ const Products = () => {
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [saveLoading, setSaveLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -59,6 +64,9 @@ const Products = () => {
       if (search.trim()) {
         params.keyword = search.trim();
       }
+      if (statusFilter) {
+        params.status = statusFilter;
+      }
       const { data } = await getProducts(params);
       const responseData = data.data;
       if (responseData.content) {
@@ -80,7 +88,7 @@ const Products = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, search]);
+  }, [page, search, statusFilter]);
 
   useEffect(() => {
     startTransition(() => {
@@ -97,6 +105,11 @@ const Products = () => {
   const handleClearSearch = () => {
     setSearchInput('');
     setSearch('');
+    setPage(0);
+  };
+
+  const handleStatusFilter = (e) => {
+    setStatusFilter(e.target.value);
     setPage(0);
   };
 
@@ -220,6 +233,18 @@ const Products = () => {
           alignItems: 'center',
         }}
       >
+        <FormControl size="small" sx={{ minWidth: 130 }}>
+          <InputLabel>Status</InputLabel>
+          <Select
+            value={statusFilter}
+            label="Status"
+            onChange={handleStatusFilter}
+          >
+            <MenuItem value="">All</MenuItem>
+            <MenuItem value="ACTIVE">Active</MenuItem>
+            <MenuItem value="INACTIVE">Inactive</MenuItem>
+          </Select>
+        </FormControl>
         <Box
           component="form"
           onSubmit={handleSearch}
