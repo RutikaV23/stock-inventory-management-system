@@ -11,6 +11,7 @@ import com.rutika.inventory.entity.StockIn;
 import com.rutika.inventory.entity.StockOut;
 import com.rutika.inventory.exception.BadRequestException;
 import com.rutika.inventory.exception.ResourceNotFoundException;
+import com.rutika.inventory.exception.ValidationException;
 import com.rutika.inventory.mapper.StockMapper;
 import com.rutika.inventory.repository.ProductRepository;
 import com.rutika.inventory.repository.StockInRepository;
@@ -68,6 +69,88 @@ public class StockServiceImpl implements StockService {
 
         StockOut savedStockOut = stockOutRepository.save(stockOut);
         return stockMapper.toOutResponse(savedStockOut);
+    }
+
+    @Override
+    @Transactional
+    public StockInResponse updateStockIn(String id, StockInRequest request) {
+        StockIn existing = stockInRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("StockIn", "id", id));
+
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", request.getProductId()));
+
+        int oldQuantity = existing.getQuantity();
+        int newQuantity = request.getQuantity();
+        int difference = newQuantity - oldQuantity;
+
+        product.setStockQuantity(product.getStockQuantity() + difference);
+        productRepository.save(product);
+
+        existing.setProduct(product);
+        existing.setQuantity(newQuantity);
+        existing.setPerformedBy(request.getPerformedBy());
+        existing.setNotes(request.getNotes());
+
+        StockIn saved = stockInRepository.save(existing);
+        return stockMapper.toInResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public StockOutResponse updateStockOut(String id, StockOutRequest request) {
+        StockOut existing = stockOutRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("StockOut", "id", id));
+
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", request.getProductId()));
+
+        int oldQuantity = existing.getQuantity();
+        int newQuantity = request.getQuantity();
+
+        int effectiveAvailable = product.getStockQuantity() + oldQuantity;
+        if (newQuantity > effectiveAvailable) {
+            throw new ValidationException(
+                    "Insufficient stock. Available: " + effectiveAvailable + ", requested: " + newQuantity);
+        }
+
+        int difference = oldQuantity - newQuantity;
+        product.setStockQuantity(product.getStockQuantity() + difference);
+        productRepository.save(product);
+
+        existing.setProduct(product);
+        existing.setQuantity(newQuantity);
+        existing.setPerformedBy(request.getPerformedBy());
+        existing.setReason(request.getReason());
+
+        StockOut saved = stockOutRepository.save(existing);
+        return stockMapper.toOutResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public void deleteStockIn(String id) {
+        StockIn existing = stockInRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("StockIn", "id", id));
+
+        Product product = existing.getProduct();
+        product.setStockQuantity(product.getStockQuantity() - existing.getQuantity());
+        productRepository.save(product);
+
+        stockInRepository.delete(existing);
+    }
+
+    @Override
+    @Transactional
+    public void deleteStockOut(String id) {
+        StockOut existing = stockOutRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("StockOut", "id", id));
+
+        Product product = existing.getProduct();
+        product.setStockQuantity(product.getStockQuantity() + existing.getQuantity());
+        productRepository.save(product);
+
+        stockOutRepository.delete(existing);
     }
 
     @Override

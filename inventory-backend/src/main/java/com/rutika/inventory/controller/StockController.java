@@ -22,8 +22,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -168,6 +171,42 @@ public class StockController {
     public ApiResponse<StockOutResponse> removeStock(@Valid @RequestBody StockOutRequest request) {
         StockOutResponse response = stockService.removeStock(request);
         return ApiResponse.success(MessageConstants.STOCK_OUT + MessageConstants.CREATED_SUCCESS, response);
+    }
+
+    @PutMapping("/in/{id}")
+    @Operation(summary = "Update stock in transaction",
+               description = "Updates a stock-in transaction and adjusts the product's stock quantity by the difference")
+    public ApiResponse<StockInResponse> updateStockIn(
+            @PathVariable String id,
+            @Valid @RequestBody StockInRequest request) {
+        StockInResponse response = stockService.updateStockIn(id, request);
+        return ApiResponse.success(MessageConstants.STOCK_IN + MessageConstants.UPDATED_SUCCESS, response);
+    }
+
+    @PutMapping("/out/{id}")
+    @Operation(summary = "Update stock out transaction",
+               description = "Updates a stock-out transaction and adjusts the product's stock quantity by the difference")
+    public ApiResponse<StockOutResponse> updateStockOut(
+            @PathVariable String id,
+            @Valid @RequestBody StockOutRequest request) {
+        StockOutResponse response = stockService.updateStockOut(id, request);
+        return ApiResponse.success(MessageConstants.STOCK_OUT + MessageConstants.UPDATED_SUCCESS, response);
+    }
+
+    @DeleteMapping("/in/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Delete a stock-in record and reverse product stock")
+    public ApiResponse<Void> deleteStockIn(@PathVariable String id) {
+        stockService.deleteStockIn(id);
+        return ApiResponse.success(MessageConstants.STOCK_IN + MessageConstants.DELETED_SUCCESS, null);
+    }
+
+    @DeleteMapping("/out/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Delete a stock-out record and reverse product stock")
+    public ApiResponse<Void> deleteStockOut(@PathVariable String id) {
+        stockService.deleteStockOut(id);
+        return ApiResponse.success(MessageConstants.STOCK_OUT + MessageConstants.DELETED_SUCCESS, null);
     }
 
     @GetMapping("/in/history")

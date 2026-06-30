@@ -7,16 +7,26 @@ import {
   Paper,
   Snackbar,
   Alert,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import {
   Add as AddIcon,
   Search as SearchIcon,
   ArrowCircleUp,
+  Visibility as ViewIcon,
+  Delete as DeleteIcon,
 } from '@mui/icons-material';
 import PageHeader from '../components/common/PageHeader';
 import StockHistoryTable from '../components/stock/StockHistoryTable';
 import StockOutDialog from '../components/stock/StockOutDialog';
-import { stockOut, getStockOutHistory } from '../api/stockApi';
+import ConfirmDialog from '../components/common/ConfirmDialog';
+import {
+  stockOut,
+  updateStockOut,
+  deleteStockOut,
+  getStockOutHistory,
+} from '../api/stockApi';
 
 const StockOut = () => {
   const [rows, setRows] = useState([]);
@@ -26,8 +36,11 @@ const StockOut = () => {
   const [searchInput, setSearchInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [saveLoading, setSaveLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editRecord, setEditRecord] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const totalPages = Math.ceil(total / 10) || 0;
 
@@ -56,6 +69,24 @@ const StockOut = () => {
           minute: '2-digit',
         });
       },
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (row) => (
+        <Box sx={{ display: 'flex', gap: 0.5 }}>
+          <Tooltip title="View / Edit">
+            <IconButton size="small" color="primary" onClick={() => handleOpenEdit(row)}>
+              <ViewIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton size="small" color="error" onClick={() => handleOpenDelete(row)}>
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
     },
   ], [page]);
 
@@ -118,23 +149,36 @@ const StockOut = () => {
   };
 
   const handleOpenAdd = () => {
+    setEditRecord(null);
     setDialogOpen(true);
   };
 
-  const handleCloseAdd = () => {
+  const handleOpenEdit = (record) => {
+    setEditRecord(record);
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
     setDialogOpen(false);
+    setEditRecord(null);
   };
 
   const handleSave = async (payload) => {
     setSaveLoading(true);
     try {
-      await stockOut(payload);
+      if (editRecord) {
+        await updateStockOut(editRecord.id, payload);
+      } else {
+        await stockOut(payload);
+      }
       setSnackbar({
         open: true,
-        message: 'Stock removed successfully',
+        message: editRecord
+          ? 'Stock out record updated successfully'
+          : 'Stock removed successfully',
         severity: 'success',
       });
-      handleCloseAdd();
+      handleCloseDialog();
       fetchHistory();
     } catch (err) {
       const message =
@@ -145,6 +189,39 @@ const StockOut = () => {
       setSnackbar({ open: true, message, severity: 'error' });
     } finally {
       setSaveLoading(false);
+    }
+  };
+
+  const handleOpenDelete = (record) => {
+    setDeleteTarget(record);
+  };
+
+  const handleCloseDelete = () => {
+    setDeleteTarget(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
+    try {
+      await deleteStockOut(deleteTarget.id);
+      setSnackbar({
+        open: true,
+        message: 'Stock out record deleted successfully',
+        severity: 'success',
+      });
+      setDeleteTarget(null);
+      fetchHistory();
+    } catch (err) {
+      const message =
+        err.response?.data?.message ||
+        (err.message === 'Network Error'
+          ? 'Unable to connect to server'
+          : 'An unexpected error occurred');
+      setSnackbar({ open: true, message, severity: 'error' });
+      setDeleteTarget(null);
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -231,9 +308,23 @@ const StockOut = () => {
 
       <StockOutDialog
         open={dialogOpen}
-        onClose={handleCloseAdd}
+        onClose={handleCloseDialog}
         onSave={handleSave}
         loading={saveLoading}
+        stockOutRecord={editRecord}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onClose={handleCloseDelete}
+        onConfirm={handleConfirmDelete}
+        title="Delete Stock Out Record"
+        message={
+          deleteTarget
+            ? `Are you sure you want to delete the stock out record for "${deleteTarget.productName}"? This action cannot be undone.`
+            : ''
+        }
+        loading={deleteLoading}
       />
 
       <Snackbar

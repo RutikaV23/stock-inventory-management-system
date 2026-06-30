@@ -14,6 +14,14 @@ public interface StockService {
 
     StockOutResponse removeStock(StockOutRequest request);
 
+    StockInResponse updateStockIn(String id, StockInRequest request);
+
+    StockOutResponse updateStockOut(String id, StockOutRequest request);
+
+    void deleteStockIn(String id);
+
+    void deleteStockOut(String id);
+
     PageResponse<StockInHistoryResponse> getStockInHistory(int page, int size, String sort, String keyword);
 
     PageResponse<StockOutHistoryResponse> getStockOutHistory(int page, int size, String sort, String keyword);

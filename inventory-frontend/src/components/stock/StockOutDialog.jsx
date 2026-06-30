@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Dialog,
@@ -21,7 +21,8 @@ const initialForm = {
   reason: '',
 };
 
-const StockOutDialog = ({ open, onClose, onSave, loading }) => {
+const StockOutDialog = ({ open, onClose, onSave, loading, stockOutRecord }) => {
+  const isEdit = !!stockOutRecord;
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
   const [products, setProducts] = useState([]);
@@ -49,11 +50,22 @@ const StockOutDialog = ({ open, onClose, onSave, loading }) => {
     }
   };
 
-  const handleEntered = () => {
-    setForm(initialForm);
-    setErrors({});
-    fetchProducts();
-  };
+  useEffect(() => {
+    if (open) {
+      setErrors({});
+      if (stockOutRecord) {
+        setForm({
+          product: null,
+          quantity: stockOutRecord.quantity ?? '',
+          performedBy: stockOutRecord.performedBy || '',
+          reason: stockOutRecord.reason || '',
+        });
+      } else {
+        setForm(initialForm);
+      }
+      fetchProducts();
+    }
+  }, [open, stockOutRecord]);
 
   const validate = () => {
     const newErrors = {};
@@ -106,17 +118,12 @@ const StockOutDialog = ({ open, onClose, onSave, loading }) => {
       onClose={loading ? undefined : onClose}
       maxWidth="sm"
       fullWidth
-      slotProps={{
-        transition: {
-          onEntered: handleEntered,
-        },
-      }}
       PaperProps={{
         sx: { borderRadius: 3 },
       }}
     >
       <DialogTitle sx={{ fontWeight: 600, pb: 1 }}>
-        Issue Stock
+        {isEdit ? 'Edit Stock Out' : 'Issue Stock'}
       </DialogTitle>
 
       <Box component="form" onSubmit={handleSubmit} noValidate>
@@ -218,6 +225,8 @@ const StockOutDialog = ({ open, onClose, onSave, loading }) => {
           >
             {loading ? (
               <CircularProgress size={20} color="inherit" />
+            ) : isEdit ? (
+              'Update'
             ) : (
               'Save'
             )}

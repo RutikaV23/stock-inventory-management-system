@@ -7,16 +7,21 @@ import {
   Paper,
   Snackbar,
   Alert,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import {
   Add as AddIcon,
   Search as SearchIcon,
   ArrowCircleDown,
+  Visibility as ViewIcon,
+  Delete as DeleteIcon,
 } from '@mui/icons-material';
 import PageHeader from '../components/common/PageHeader';
 import StockHistoryTable from '../components/stock/StockHistoryTable';
 import StockInDialog from '../components/stock/StockInDialog';
-import { stockIn, getStockInHistory } from '../api/stockApi';
+import ConfirmDialog from '../components/common/ConfirmDialog';
+import { stockIn, updateStockIn, getStockInHistory, deleteStockIn } from '../api/stockApi';
 
 const StockIn = () => {
   const [rows, setRows] = useState([]);
@@ -26,8 +31,13 @@ const StockIn = () => {
   const [searchInput, setSearchInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [saveLoading, setSaveLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editRecord, setEditRecord] = useState(null);
+
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const totalPages = Math.ceil(total / 10) || 0;
 
@@ -56,6 +66,24 @@ const StockIn = () => {
           minute: '2-digit',
         });
       },
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (row) => (
+        <Box sx={{ display: 'flex', gap: 0.5 }}>
+          <Tooltip title="View / Edit">
+            <IconButton size="small" color="primary" onClick={() => handleOpenEdit(row)}>
+              <ViewIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton size="small" color="error" onClick={() => handleOpenDelete(row)}>
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
     },
   ], [page]);
 
@@ -118,23 +146,39 @@ const StockIn = () => {
   };
 
   const handleOpenAdd = () => {
+    setEditRecord(null);
     setDialogOpen(true);
   };
 
-  const handleCloseAdd = () => {
+  const handleOpenEdit = (row) => {
+    setEditRecord(row);
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
     setDialogOpen(false);
+    setEditRecord(null);
   };
 
   const handleSave = async (payload) => {
     setSaveLoading(true);
     try {
-      await stockIn(payload);
-      setSnackbar({
-        open: true,
-        message: 'Stock added successfully',
-        severity: 'success',
-      });
-      handleCloseAdd();
+      if (editRecord) {
+        await updateStockIn(editRecord.id, payload);
+        setSnackbar({
+          open: true,
+          message: 'Stock In updated successfully',
+          severity: 'success',
+        });
+      } else {
+        await stockIn(payload);
+        setSnackbar({
+          open: true,
+          message: 'Stock added successfully',
+          severity: 'success',
+        });
+      }
+      handleCloseDialog();
       fetchHistory();
     } catch (err) {
       const message =
@@ -145,6 +189,40 @@ const StockIn = () => {
       setSnackbar({ open: true, message, severity: 'error' });
     } finally {
       setSaveLoading(false);
+    }
+  };
+
+  const handleOpenDelete = (row) => {
+    setDeleteTarget(row);
+    setDeleteOpen(true);
+  };
+
+  const handleCloseDelete = () => {
+    setDeleteOpen(false);
+    setDeleteTarget(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
+    try {
+      await deleteStockIn(deleteTarget.id);
+      setSnackbar({
+        open: true,
+        message: 'Stock In deleted successfully',
+        severity: 'success',
+      });
+      handleCloseDelete();
+      fetchHistory();
+    } catch (err) {
+      const message =
+        err.response?.data?.message ||
+        (err.message === 'Network Error'
+          ? 'Unable to connect to server'
+          : 'An unexpected error occurred');
+      setSnackbar({ open: true, message, severity: 'error' });
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -231,9 +309,23 @@ const StockIn = () => {
 
       <StockInDialog
         open={dialogOpen}
-        onClose={handleCloseAdd}
+        onClose={handleCloseDialog}
         onSave={handleSave}
         loading={saveLoading}
+        stockInRecord={editRecord}
+      />
+
+      <ConfirmDialog
+        open={deleteOpen}
+        onClose={handleCloseDelete}
+        onConfirm={handleConfirmDelete}
+        title="Delete Stock In Record"
+        message={
+          deleteTarget
+            ? `Are you sure you want to delete the stock in record for "${deleteTarget.productName}"? This action cannot be undone.`
+            : ''
+        }
+        loading={deleteLoading}
       />
 
       <Snackbar

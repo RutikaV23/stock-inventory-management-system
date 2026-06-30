@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Dialog,
@@ -21,7 +21,8 @@ const initialForm = {
   notes: '',
 };
 
-const StockInDialog = ({ open, onClose, onSave, loading }) => {
+const StockInDialog = ({ open, onClose, onSave, loading, stockInRecord }) => {
+  const isEdit = !!stockInRecord;
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
   const [products, setProducts] = useState([]);
@@ -49,10 +50,25 @@ const StockInDialog = ({ open, onClose, onSave, loading }) => {
     }
   };
 
-  const handleEntered = () => {
-    setForm(initialForm);
-    setErrors({});
-    fetchProducts();
+  useEffect(() => {
+    if (open) {
+      setErrors({});
+      if (stockInRecord) {
+        setForm({
+          product: null,
+          quantity: stockInRecord.quantity ?? '',
+          performedBy: stockInRecord.performedBy || '',
+          notes: stockInRecord.notes || '',
+        });
+      } else {
+        setForm(initialForm);
+      }
+      fetchProducts();
+    }
+  }, [open, stockInRecord]);
+
+  const getProductFromList = (productId) => {
+    return products.find((p) => p.id === productId) || null;
   };
 
   const validate = () => {
@@ -103,17 +119,12 @@ const StockInDialog = ({ open, onClose, onSave, loading }) => {
       onClose={loading ? undefined : onClose}
       maxWidth="sm"
       fullWidth
-      slotProps={{
-        transition: {
-          onEntered: handleEntered,
-        },
-      }}
       PaperProps={{
         sx: { borderRadius: 3 },
       }}
     >
       <DialogTitle sx={{ fontWeight: 600, pb: 1 }}>
-        Add Stock
+        {isEdit ? 'Edit Stock In' : 'Add Stock'}
       </DialogTitle>
 
       <Box component="form" onSubmit={handleSubmit} noValidate>
@@ -213,6 +224,8 @@ const StockInDialog = ({ open, onClose, onSave, loading }) => {
           >
             {loading ? (
               <CircularProgress size={20} color="inherit" />
+            ) : isEdit ? (
+              'Update'
             ) : (
               'Save'
             )}
