@@ -20,14 +20,11 @@ public class StockInResponse {
     @Schema(description = "Name of the product", example = "Wireless Mouse")
     private String productName;
 
-    @Schema(description = "SKU of the product", example = "WM-001")
-    private String productSku;
-
     @Schema(description = "Quantity added to stock", example = "50")
     private Integer quantity;
 
-    @Schema(description = "Reference number (e.g., purchase order)", example = "PO-2026-001")
-    private String referenceNumber;
+    @Schema(description = "Name of the person who performed the transaction", example = "John Doe")
+    private String performedBy;
 
     @Schema(description = "Notes about the transaction", example = "Restock from supplier")
     private String notes;

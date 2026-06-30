@@ -28,8 +28,8 @@ public class StockOut {
     @Column(name = "reason")
     private String reason;
 
-    @Column(name = "reference_number")
-    private String referenceNumber;
+    @Column(name = "performed_by", length = 150)
+    private String performedBy;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

@@ -56,9 +56,8 @@ public class StockController {
                                         "id": "660e8400-e29b-41d4-a716-446655440001",
                                         "productId": "550e8400-e29b-41d4-a716-446655440000",
                                         "productName": "Wireless Mouse",
-                                        "productSku": "WM-001",
                                         "quantity": 50,
-                                        "referenceNumber": "PO-2026-001",
+                                        "performedBy": "John Doe",
                                         "notes": "Restock from supplier",
                                         "createdAt": "2026-06-27T10:30:00Z"
                                     },
@@ -117,10 +116,9 @@ public class StockController {
                                         "id": "770e8400-e29b-41d4-a716-446655440002",
                                         "productId": "550e8400-e29b-41d4-a716-446655440000",
                                         "productName": "Wireless Mouse",
-                                        "productSku": "WM-001",
                                         "quantity": 5,
                                         "reason": "Customer order fulfillment",
-                                        "referenceNumber": "SO-2026-001",
+                                        "performedBy": "John Doe",
                                         "createdAt": "2026-06-27T10:30:00Z"
                                     },
                                     "timestamp": "2026-06-27T10:30:00Z"
@@ -179,7 +177,7 @@ public class StockController {
         @Parameter(name = "page", description = "Page number (zero-based)", example = "0"),
         @Parameter(name = "size", description = "Number of items per page", example = "10"),
         @Parameter(name = "sort", description = "Sort field and direction (e.g., stockInDate,desc or quantity,asc)", example = "stockInDate,desc"),
-        @Parameter(name = "keyword", description = "Search keyword (matches product name, SKU, reference number, or remarks)", example = "mouse")
+        @Parameter(name = "keyword", description = "Search keyword (matches product name, performed by, or remarks)", example = "mouse")
     })
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -196,13 +194,11 @@ public class StockController {
                                                 "id": "660e8400-e29b-41d4-a716-446655440001",
                                                 "productId": "550e8400-e29b-41d4-a716-446655440000",
                                                 "productName": "Wireless Mouse",
-                                                "sku": "WM-001",
                                                 "quantity": 50,
                                                 "currentStock": 150,
-                                                "supplierName": null,
-                                                "performedBy": null,
+                                                "performedBy": "John Doe",
+                                                "notes": "Restock from supplier",
                                                 "stockInDate": "2026-06-27T10:30:00Z",
-                                                "remarks": "Restock from supplier",
                                                 "createdAt": "2026-06-27T10:30:00Z"
                                             }
                                         ],
@@ -237,7 +233,7 @@ public class StockController {
         @Parameter(name = "page", description = "Page number (zero-based)", example = "0"),
         @Parameter(name = "size", description = "Number of items per page", example = "10"),
         @Parameter(name = "sort", description = "Sort field and direction (e.g., stockOutDate,desc or quantity,asc)", example = "stockOutDate,desc"),
-        @Parameter(name = "keyword", description = "Search keyword (matches product name, reference number, or reason)", example = "mouse")
+        @Parameter(name = "keyword", description = "Search keyword (matches product name, performed by, or reason)", example = "mouse")
     })
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -256,9 +252,8 @@ public class StockController {
                                                 "productName": "Wireless Mouse",
                                                 "quantity": 5,
                                                 "currentStock": 145,
-                                                "referenceNumber": "SO-2026-001",
+                                                "performedBy": "John Doe",
                                                 "reason": "Customer order fulfillment",
-                                                "performedBy": null,
                                                 "stockOutDate": "2026-06-27T10:30:00Z",
                                                 "createdAt": "2026-06-27T10:30:00Z"
                                             }

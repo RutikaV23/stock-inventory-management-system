@@ -20,17 +20,14 @@ public class StockOutResponse {
     @Schema(description = "Name of the product", example = "Wireless Mouse")
     private String productName;
 
-    @Schema(description = "SKU of the product", example = "WM-001")
-    private String productSku;
-
     @Schema(description = "Quantity removed from stock", example = "5")
     private Integer quantity;
 
     @Schema(description = "Reason for stock removal", example = "Customer order fulfillment")
     private String reason;
 
-    @Schema(description = "Reference number (e.g., sales order)", example = "SO-2026-001")
-    private String referenceNumber;
+    @Schema(description = "Name of the person who performed the transaction", example = "John Doe")
+    private String performedBy;
 
     @Schema(description = "Timestamp when the transaction was created", example = "2026-06-27T10:30:00Z")
     private Instant createdAt;

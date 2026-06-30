@@ -26,14 +26,11 @@ public class StockOutHistoryResponse {
     @Schema(description = "Current stock quantity after this transaction", example = "145")
     private Integer currentStock;
 
-    @Schema(description = "Reference number (e.g., sales order)", example = "SO-2026-001")
-    private String referenceNumber;
+    @Schema(description = "Name of the person who performed the transaction (if available)", example = "John Doe")
+    private String performedBy;
 
     @Schema(description = "Reason for stock removal", example = "Customer order fulfillment")
     private String reason;
-
-    @Schema(description = "Name of the person who performed the transaction (if available)", example = "John Doe")
-    private String performedBy;
 
     @Schema(description = "Date of the stock-out transaction", example = "2026-06-27T10:30:00Z")
     private Instant stockOutDate;

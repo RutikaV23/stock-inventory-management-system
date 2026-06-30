@@ -16,7 +16,7 @@ public class StockMapper {
     public StockIn toInEntity(StockInRequest request) {
         StockIn stockIn = new StockIn();
         stockIn.setQuantity(request.getQuantity());
-        stockIn.setReferenceNumber(request.getReferenceNumber());
+        stockIn.setPerformedBy(request.getPerformedBy());
         stockIn.setNotes(request.getNotes());
         return stockIn;
     }
@@ -27,7 +27,7 @@ public class StockMapper {
         response.setProductId(stockIn.getProduct().getId());
         response.setProductName(stockIn.getProduct().getName());
         response.setQuantity(stockIn.getQuantity());
-        response.setReferenceNumber(stockIn.getReferenceNumber());
+        response.setPerformedBy(stockIn.getPerformedBy());
         response.setNotes(stockIn.getNotes());
         response.setCreatedAt(stockIn.getCreatedAt());
         return response;
@@ -36,8 +36,8 @@ public class StockMapper {
     public StockOut toOutEntity(StockOutRequest request) {
         StockOut stockOut = new StockOut();
         stockOut.setQuantity(request.getQuantity());
+        stockOut.setPerformedBy(request.getPerformedBy());
         stockOut.setReason(request.getReason());
-        stockOut.setReferenceNumber(request.getReferenceNumber());
         return stockOut;
     }
 
@@ -48,7 +48,7 @@ public class StockMapper {
         response.setProductName(stockOut.getProduct().getName());
         response.setQuantity(stockOut.getQuantity());
         response.setReason(stockOut.getReason());
-        response.setReferenceNumber(stockOut.getReferenceNumber());
+        response.setPerformedBy(stockOut.getPerformedBy());
         response.setCreatedAt(stockOut.getCreatedAt());
         return response;
     }
@@ -60,10 +60,9 @@ public class StockMapper {
         response.setProductName(stockIn.getProduct().getName());
         response.setQuantity(stockIn.getQuantity());
         response.setCurrentStock(stockIn.getProduct().getStockQuantity());
-        response.setSupplierName(null);
-        response.setPerformedBy(null);
+        response.setPerformedBy(stockIn.getPerformedBy());
+        response.setNotes(stockIn.getNotes());
         response.setStockInDate(stockIn.getCreatedAt());
-        response.setRemarks(stockIn.getNotes());
         response.setCreatedAt(stockIn.getCreatedAt());
         return response;
     }
@@ -75,9 +74,8 @@ public class StockMapper {
         response.setProductName(stockOut.getProduct().getName());
         response.setQuantity(stockOut.getQuantity());
         response.setCurrentStock(stockOut.getProduct().getStockQuantity());
-        response.setReferenceNumber(stockOut.getReferenceNumber());
+        response.setPerformedBy(stockOut.getPerformedBy());
         response.setReason(stockOut.getReason());
-        response.setPerformedBy(null);
         response.setStockOutDate(stockOut.getCreatedAt());
         response.setCreatedAt(stockOut.getCreatedAt());
         return response;

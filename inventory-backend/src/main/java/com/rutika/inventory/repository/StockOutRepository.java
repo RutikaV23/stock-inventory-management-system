@@ -19,7 +19,7 @@ public interface StockOutRepository extends JpaRepository<StockOut, String> {
 
     @Query("SELECT s FROM StockOut s JOIN s.product p WHERE " +
            "LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(COALESCE(s.referenceNumber, '')) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+           "LOWER(COALESCE(s.performedBy, '')) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(COALESCE(s.reason, '')) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<StockOut> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }

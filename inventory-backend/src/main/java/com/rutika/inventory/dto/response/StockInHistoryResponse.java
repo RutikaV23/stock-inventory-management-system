@@ -20,26 +20,20 @@ public class StockInHistoryResponse {
     @Schema(description = "Name of the product", example = "Wireless Mouse")
     private String productName;
 
-    @Schema(description = "SKU of the product", example = "WM-001")
-    private String sku;
-
     @Schema(description = "Quantity added in this transaction", example = "50")
     private Integer quantity;
 
     @Schema(description = "Current stock quantity after this transaction", example = "150")
     private Integer currentStock;
 
-    @Schema(description = "Name of the supplier (if available)", example = "Tech Distributors Inc.")
-    private String supplierName;
-
     @Schema(description = "Name of the person who performed the transaction (if available)", example = "John Doe")
     private String performedBy;
 
+    @Schema(description = "Remarks about the transaction", example = "Restock from supplier")
+    private String notes;
+
     @Schema(description = "Date of the stock-in transaction", example = "2026-06-27T10:30:00Z")
     private Instant stockInDate;
-
-    @Schema(description = "Remarks about the transaction", example = "Restock from supplier")
-    private String remarks;
 
     @Schema(description = "Timestamp when the record was created", example = "2026-06-27T10:30:00Z")
     private Instant createdAt;

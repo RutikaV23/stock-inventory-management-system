@@ -25,8 +25,8 @@ public class StockIn {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "reference_number")
-    private String referenceNumber;
+    @Column(name = "performed_by", length = 150)
+    private String performedBy;
 
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
