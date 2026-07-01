@@ -12,8 +12,10 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { getProducts } from '../../api/productApi';
+import { useLanguage } from '../../context/LanguageContext';
 
 const RecentProductsCard = () => {
+  const { t } = useLanguage();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -54,10 +56,10 @@ const RecentProductsCard = () => {
     >
       <Box sx={{ p: 3, pb: 0 }}>
         <Typography variant="h6" fontWeight={600}>
-          Recently Added Products
+          {t('Recently Added Products')}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, mb: 2 }}>
-          Latest 5 products
+          {t('Latest 5 products')}
         </Typography>
       </Box>
 
@@ -67,7 +69,7 @@ const RecentProductsCard = () => {
         </Box>
       ) : products.length === 0 ? (
         <Typography variant="body2" color="text.disabled" sx={{ px: 3, pb: 3 }}>
-          No products added yet.
+          {t('No products added yet.')}
         </Typography>
       ) : (
         <TableContainer>
@@ -75,10 +77,10 @@ const RecentProductsCard = () => {
             <TableHead>
               <TableRow>
                 <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                  Product Name
+                  {t('Product Name')}
                 </TableCell>
                 <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                  Added Date
+                  {t('Added Date')}
                 </TableCell>
               </TableRow>
             </TableHead>

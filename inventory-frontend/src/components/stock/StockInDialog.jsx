@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Dialog,
@@ -11,6 +11,7 @@ import {
   Autocomplete,
   Alert,
 } from '@mui/material';
+import { useLanguage } from '../../context/LanguageContext';
 import { toSentenceCase } from '../../utils/sentenceCase';
 import { getProducts } from '../../api/productApi';
 
@@ -29,7 +30,9 @@ const StockInDialog = ({ open, onClose, onSave, loading, stockInRecord }) => {
   const [productsLoading, setProductsLoading] = useState(false);
   const [fetchError, setFetchError] = useState('');
 
-  const fetchProducts = async () => {
+  const { t } = useLanguage();
+
+  const fetchProducts = useCallback(async () => {
     setProductsLoading(true);
     setFetchError('');
     try {
@@ -44,11 +47,11 @@ const StockInDialog = ({ open, onClose, onSave, loading, stockInRecord }) => {
       }
     } catch {
       setProducts([]);
-      setFetchError('Failed to load products. Please try again.');
+      setFetchError(t('Failed to load products. Please try again.'));
     } finally {
       setProductsLoading(false);
     }
-  };
+  }, [t]);
 
   useEffect(() => {
     if (open) {
@@ -65,7 +68,7 @@ const StockInDialog = ({ open, onClose, onSave, loading, stockInRecord }) => {
       }
       fetchProducts();
     }
-  }, [open, stockInRecord]);
+  }, [open, stockInRecord, fetchProducts]);
 
   const getProductFromList = (productId) => {
     return products.find((p) => p.id === productId) || null;
@@ -74,15 +77,15 @@ const StockInDialog = ({ open, onClose, onSave, loading, stockInRecord }) => {
   const validate = () => {
     const newErrors = {};
     if (!form.product) {
-      newErrors.product = 'Product is required';
+      newErrors.product = t('Product is required');
     }
     if (form.quantity === '' || form.quantity == null) {
-      newErrors.quantity = 'Quantity is required';
+      newErrors.quantity = t('Quantity is required');
     } else if (!Number.isInteger(Number(form.quantity)) || Number(form.quantity) <= 0) {
-      newErrors.quantity = 'Must be a positive integer';
+      newErrors.quantity = t('Must be a positive integer');
     }
     if (!form.performedBy.trim()) {
-      newErrors.performedBy = 'Performed by is required';
+      newErrors.performedBy = t('Performed by is required');
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -124,7 +127,7 @@ const StockInDialog = ({ open, onClose, onSave, loading, stockInRecord }) => {
       }}
     >
       <DialogTitle sx={{ fontWeight: 600, pb: 1 }}>
-        {isEdit ? 'Edit Stock In' : 'Add Stock'}
+        {isEdit ? t('Edit Stock In') : t('Add Stock')}
       </DialogTitle>
 
       <Box component="form" onSubmit={handleSubmit} noValidate>
@@ -147,11 +150,11 @@ const StockInDialog = ({ open, onClose, onSave, loading, stockInRecord }) => {
             }}
             getOptionLabel={(option) => option.name || ''}
             isOptionEqualToValue={(option, value) => value ? option.id === value.id : false}
-            noOptionsText="No active products available"
+            noOptionsText={t('No active products available')}
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Product"
+                label={t('Product')}
                 required
                 error={!!errors.product}
                 helperText={errors.product}
@@ -171,7 +174,7 @@ const StockInDialog = ({ open, onClose, onSave, loading, stockInRecord }) => {
 
           <TextField
             fullWidth
-            label="Quantity"
+            label={t('Quantity')}
             type="number"
             value={form.quantity}
             onChange={handleChange('quantity')}
@@ -184,20 +187,20 @@ const StockInDialog = ({ open, onClose, onSave, loading, stockInRecord }) => {
 
           <TextField
             fullWidth
-            label="Performed By"
+            label={t('Performed By')}
             value={form.performedBy}
             onChange={handleChange('performedBy')}
             onBlur={handleBlur('performedBy')}
             error={!!errors.performedBy}
             helperText={errors.performedBy}
             required
-            placeholder="Enter person name"
+            placeholder={t('Enter person name')}
             sx={{ mb: 2 }}
           />
 
           <TextField
             fullWidth
-            label="Notes"
+            label={t('Notes')}
             value={form.notes}
             onChange={handleChange('notes')}
             onBlur={handleBlur('notes')}
@@ -214,7 +217,7 @@ const StockInDialog = ({ open, onClose, onSave, loading, stockInRecord }) => {
             variant="outlined"
             color="inherit"
           >
-            Cancel
+            {t('Cancel')}
           </Button>
           <Button
             type="submit"
@@ -225,9 +228,9 @@ const StockInDialog = ({ open, onClose, onSave, loading, stockInRecord }) => {
             {loading ? (
               <CircularProgress size={20} color="inherit" />
             ) : isEdit ? (
-              'Update'
+              t('Update')
             ) : (
-              'Save'
+              t('Save')
             )}
           </Button>
         </DialogActions>

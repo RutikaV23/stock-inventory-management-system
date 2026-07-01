@@ -1,3 +1,4 @@
+import { useLanguage } from '../../context/LanguageContext';
 import {
   Dialog,
   DialogTitle,
@@ -16,6 +17,7 @@ const DeleteUserDialog = ({
   userName,
   loading,
 }) => {
+  const { t } = useLanguage();
   return (
     <Dialog
       open={open}
@@ -28,13 +30,13 @@ const DeleteUserDialog = ({
     >
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, pb: 1 }}>
         <WarningAmberOutlined color="warning" />
-        <span>Confirm Delete</span>
+        <span>{t('Confirm Delete')}</span>
       </DialogTitle>
 
       <DialogContent sx={{ pt: 1 }}>
         <DialogContentText>
-          Are you sure you want to delete{' '}
-          <strong>{userName || 'this user'}</strong>?
+          {t('Are you sure you want to delete')}{' '}
+          <strong>{userName || t('this user')}</strong>?
         </DialogContentText>
       </DialogContent>
 
@@ -45,7 +47,7 @@ const DeleteUserDialog = ({
           variant="outlined"
           color="inherit"
         >
-          Cancel
+          {t('Cancel')}
         </Button>
         <Button
           onClick={onConfirm}
@@ -57,7 +59,7 @@ const DeleteUserDialog = ({
           {loading ? (
             <CircularProgress size={20} color="inherit" />
           ) : (
-            'Delete'
+            t('Delete')
           )}
         </Button>
       </DialogActions>

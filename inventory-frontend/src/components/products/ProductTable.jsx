@@ -20,6 +20,7 @@ import {
 } from '@mui/icons-material';
 
 import formatCurrency from '../../utils/formatCurrency';
+import { useLanguage } from '../../context/LanguageContext';
 
 
 const ProductTable = ({
@@ -31,6 +32,8 @@ const ProductTable = ({
   onView,
   onDelete,
 }) => {
+  const { t } = useLanguage();
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
@@ -58,34 +61,34 @@ const ProductTable = ({
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                Sr. No.
+                {t('Sr. No.')}
               </TableCell>
               <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                Product Name
+                {t('Product Name')}
               </TableCell>
               <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                Description
+                {t('Description')}
               </TableCell>
               <TableCell
                 align="right"
                 sx={{ fontWeight: 600, color: 'text.secondary' }}
               >
-                Price
+                {t('Price')}
               </TableCell>
               <TableCell
                 align="right"
                 sx={{ fontWeight: 600, color: 'text.secondary' }}
               >
-                Stock Quantity
+                {t('Stock Quantity')}
               </TableCell>
               <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                Status
+                {t('Status')}
               </TableCell>
               <TableCell
                 align="center"
                 sx={{ fontWeight: 600, color: 'text.secondary' }}
               >
-                Actions
+                {t('Actions')}
               </TableCell>
             </TableRow>
           </TableHead>
@@ -170,10 +173,10 @@ const ProductTable = ({
           onClick={() => onPageChange(page - 1)}
           sx={{ minWidth: 90 }}
         >
-          Previous
+          {t('Previous')}
         </Button>
         <Typography variant="body2" color="text.secondary">
-          Page {totalPages > 0 ? page + 1 : 0} of {totalPages}
+          {t('Page')} {totalPages > 0 ? page + 1 : 0} {t('of')} {totalPages}
         </Typography>
         <Button
           size="small"
@@ -182,7 +185,7 @@ const ProductTable = ({
           onClick={() => onPageChange(page + 1)}
           sx={{ minWidth: 90 }}
         >
-          Next
+          {t('Next')}
         </Button>
       </Box>
     </Paper>

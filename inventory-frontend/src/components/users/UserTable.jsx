@@ -1,3 +1,4 @@
+import { useLanguage } from '../../context/LanguageContext';
 import {
   Table,
   TableBody,
@@ -27,6 +28,7 @@ const UserTable = ({
   onView,
   onDelete,
 }) => {
+  const { t } = useLanguage();
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
@@ -65,31 +67,31 @@ const UserTable = ({
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                Sr. No.
+                {t('Sr. No.')}
               </TableCell>
               <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                Full Name
+                {t('Full Name')}
               </TableCell>
               <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                Email
+                {t('Email')}
               </TableCell>
               <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                Phone
+                {t('Phone')}
               </TableCell>
               <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                Role
+                {t('Role')}
               </TableCell>
               <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                Status
+                {t('Status')}
               </TableCell>
               <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                Last Login
+                {t('Last Login')}
               </TableCell>
               <TableCell
                 align="center"
                 sx={{ fontWeight: 600, color: 'text.secondary' }}
               >
-                Actions
+                {t('Actions')}
               </TableCell>
             </TableRow>
           </TableHead>
@@ -169,10 +171,10 @@ const UserTable = ({
           onClick={() => onPageChange(page - 1)}
           sx={{ minWidth: 90 }}
         >
-          Previous
+          {t('Previous')}
         </Button>
         <Typography variant="body2" color="text.secondary">
-          Page {totalPages > 0 ? page + 1 : 0} of {totalPages}
+          {t('Page')} {totalPages > 0 ? page + 1 : 0} {t('of')} {totalPages}
         </Typography>
         <Button
           size="small"
@@ -181,7 +183,7 @@ const UserTable = ({
           onClick={() => onPageChange(page + 1)}
           sx={{ minWidth: 90 }}
         >
-          Next
+          {t('Next')}
         </Button>
       </Box>
     </Paper>

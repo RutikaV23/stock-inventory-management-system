@@ -8,6 +8,7 @@ import StockIn from '../pages/StockIn';
 import StockOut from '../pages/StockOut';
 import Reports from '../pages/Reports';
 import Profile from '../pages/Profile';
+import ProfileEdit from '../pages/ProfileEdit';
 import PrivateRoute from './PrivateRoute';
 import { useAuth } from '../context/AuthContext';
 
@@ -28,6 +29,7 @@ const AppRoutes = () => {
           <Route path="/stock-out" element={<StockOut />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/edit" element={<ProfileEdit />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

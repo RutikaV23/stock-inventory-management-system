@@ -12,8 +12,10 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { getProducts } from '../../api/productApi';
+import { useLanguage } from '../../context/LanguageContext';
 
 const LowStockCard = () => {
+  const { t } = useLanguage();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -49,10 +51,10 @@ const LowStockCard = () => {
     >
       <Box sx={{ p: 3, pb: 0 }}>
         <Typography variant="h6" fontWeight={600}>
-          Low Stock Alert
+          {t('Low Stock Alert')}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, mb: 2 }}>
-          Products needing replenishment
+          {t('Products needing replenishment')}
         </Typography>
       </Box>
 
@@ -62,7 +64,7 @@ const LowStockCard = () => {
         </Box>
       ) : products.length === 0 ? (
         <Typography variant="body2" color="text.disabled" sx={{ px: 3, pb: 3 }}>
-          All products are well-stocked.
+          {t('All products are well-stocked.')}
         </Typography>
       ) : (
         <TableContainer>
@@ -70,13 +72,13 @@ const LowStockCard = () => {
             <TableHead>
               <TableRow>
                 <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                  Product Name
+                  {t('Product Name')}
                 </TableCell>
                 <TableCell
                   align="right"
                   sx={{ fontWeight: 600, color: 'text.secondary' }}
                 >
-                  Remaining
+                  {t('Remaining')}
                 </TableCell>
               </TableRow>
             </TableHead>

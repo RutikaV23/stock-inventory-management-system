@@ -8,6 +8,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { WarningAmberOutlined } from '@mui/icons-material';
+import { useLanguage } from '../../context/LanguageContext';
 
 const DeleteConfirmDialog = ({
   open,
@@ -16,6 +17,8 @@ const DeleteConfirmDialog = ({
   productName,
   loading,
 }) => {
+  const { t } = useLanguage();
+
   return (
     <Dialog
       open={open}
@@ -28,13 +31,13 @@ const DeleteConfirmDialog = ({
     >
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, pb: 1 }}>
         <WarningAmberOutlined color="warning" />
-        <span>Confirm Delete</span>
+        <span>{t('Confirm Delete')}</span>
       </DialogTitle>
 
       <DialogContent sx={{ pt: 1 }}>
         <DialogContentText>
-          Are you sure you want to delete{' '}
-          <strong>{productName || 'this product'}</strong>? This action cannot be
+          {t('Are you sure you want to delete')}{' '}
+          <strong>{productName || t('this product')}</strong>? This action cannot be
           undone.
         </DialogContentText>
       </DialogContent>
@@ -46,7 +49,7 @@ const DeleteConfirmDialog = ({
           variant="outlined"
           color="inherit"
         >
-          Cancel
+          {t('Cancel')}
         </Button>
         <Button
           onClick={onConfirm}
@@ -58,7 +61,7 @@ const DeleteConfirmDialog = ({
           {loading ? (
             <CircularProgress size={20} color="inherit" />
           ) : (
-            'Delete'
+            t('Delete')
           )}
         </Button>
       </DialogActions>

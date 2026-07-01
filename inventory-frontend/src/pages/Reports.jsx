@@ -20,6 +20,7 @@ import {
 import PageHeader from '../components/common/PageHeader';
 import ReportTable from '../components/reports/ReportTable';
 import { getReports, exportReportsToExcel } from '../api/reportApi';
+import { useLanguage } from '../context/LanguageContext';
 
 const Reports = () => {
   const [reports, setReports] = useState([]);
@@ -32,6 +33,8 @@ const Reports = () => {
   const [dateTo, setDateTo] = useState('');
   const [loading, setLoading] = useState(true);
   const [exportLoading, setExportLoading] = useState(false);
+
+  const { t } = useLanguage();
 
   const totalPages = Math.ceil(total / 10) || 0;
 
@@ -74,19 +77,19 @@ const Reports = () => {
       }
       setSnackbar({
         open: true,
-        message: 'Report loaded successfully',
+        message: t('Report loaded successfully'),
         severity: 'success',
       });
     } catch {
       setSnackbar({
         open: true,
-        message: 'Network error',
+        message: t('Network error'),
         severity: 'error',
       });
     } finally {
       setLoading(false);
     }
-  }, [page, search, statusFilter, dateFrom, dateTo]);
+  }, [page, search, statusFilter, dateFrom, dateTo, t]);
 
   useEffect(() => {
     startTransition(() => {
@@ -148,13 +151,13 @@ const Reports = () => {
       window.URL.revokeObjectURL(url);
       setSnackbar({
         open: true,
-        message: 'Report exported successfully',
+        message: t('Report exported successfully'),
         severity: 'success',
       });
     } catch {
       setSnackbar({
         open: true,
-        message: 'Network error',
+        message: t('Network error'),
         severity: 'error',
       });
     } finally {
@@ -169,26 +172,26 @@ const Reports = () => {
   const columns = useMemo(() => [
     {
       key: 'srNo',
-      label: 'Sr. No.',
+      label: t('Sr. No.'),
       width: 60,
       render: (_, index) => page * 10 + index + 1,
     },
-    { key: 'productName', label: 'Product Name' },
-    { key: 'currentStock', label: 'Current Stock', align: 'right' },
-    { key: 'totalStockIn', label: 'Total Stock In', align: 'right' },
-    { key: 'totalStockOut', label: 'Total Stock Out', align: 'right' },
-    { key: 'availableStock', label: 'Available Stock', align: 'right' },
-    { key: 'inventoryValue', label: 'Inventory Value (₹)', align: 'right' },
-    { key: 'status', label: 'Status', align: 'center' },
-  ], [page]);
+    { key: 'productName', label: t('Product Name') },
+    { key: 'currentStock', label: t('Current Stock'), align: 'right' },
+    { key: 'totalStockIn', label: t('Total Stock In'), align: 'right' },
+    { key: 'totalStockOut', label: t('Total Stock Out'), align: 'right' },
+    { key: 'availableStock', label: t('Available Stock'), align: 'right' },
+    { key: 'inventoryValue', label: t('Inventory Value (₹)'), align: 'right' },
+    { key: 'status', label: t('Status'), align: 'center' },
+  ], [page, t]);
 
   const hasActiveFilters = search || statusFilter || dateFrom || dateTo;
 
   return (
     <>
       <PageHeader
-        title="Reports"
-        subtitle="Inventory Reports & Analytics"
+        title={t('Reports')}
+        subtitle={t('Inventory Reports & Analytics')}
         action={
           <Button
             variant="contained"
@@ -197,7 +200,7 @@ const Reports = () => {
             disabled={exportLoading}
             sx={{ boxShadow: '0 4px 14px rgba(21,101,192,0.25)' }}
           >
-            {exportLoading ? 'Exporting...' : 'Export to Excel'}
+            {exportLoading ? t('Exporting...') : t('Export to Excel')}
           </Button>
         }
       />
@@ -217,22 +220,22 @@ const Reports = () => {
         }}
       >
         <FormControl size="small" sx={{ minWidth: 130 }}>
-          <InputLabel>Status</InputLabel>
+          <InputLabel>{t('Status')}</InputLabel>
           <Select
             value={statusFilter}
-            label="Status"
+            label={t('Status')}
             onChange={handleStatusFilter}
           >
-            <MenuItem value="">All</MenuItem>
-            <MenuItem value="ACTIVE">Active</MenuItem>
-            <MenuItem value="INACTIVE">Inactive</MenuItem>
+            <MenuItem value="">{t('All')}</MenuItem>
+            <MenuItem value="ACTIVE">{t('Active')}</MenuItem>
+            <MenuItem value="INACTIVE">{t('Inactive')}</MenuItem>
           </Select>
         </FormControl>
 
         <TextField
           type="date"
           size="small"
-          label="From Date"
+          label={t('From Date')}
           value={dateFrom}
           onChange={(e) => { setDateFrom(e.target.value); setPage(0); }}
           slotProps={{ inputLabel: { shrink: true } }}
@@ -242,7 +245,7 @@ const Reports = () => {
         <TextField
           type="date"
           size="small"
-          label="To Date"
+          label={t('To Date')}
           value={dateTo}
           onChange={(e) => { setDateTo(e.target.value); setPage(0); }}
           slotProps={{ inputLabel: { shrink: true } }}
@@ -256,7 +259,7 @@ const Reports = () => {
         >
           <TextField
             size="small"
-            placeholder="Search by product name..."
+            placeholder={t('Search by product name...')}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             sx={{ flex: 1, minWidth: 200 }}
@@ -269,7 +272,7 @@ const Reports = () => {
             }}
           />
           <Button type="submit" variant="contained" size="small">
-            Search
+            {t('Search')}
           </Button>
           {hasActiveFilters && (
             <Button
@@ -278,7 +281,7 @@ const Reports = () => {
               color="inherit"
               onClick={handleReset}
             >
-              Reset
+              {t('Reset')}
             </Button>
           )}
         </Box>
@@ -291,7 +294,7 @@ const Reports = () => {
         totalPages={totalPages}
         loading={loading}
         onPageChange={handleChangePage}
-        emptyMessage="No reports found."
+        emptyMessage={t('No reports found.')}
       />
 
       <Snackbar

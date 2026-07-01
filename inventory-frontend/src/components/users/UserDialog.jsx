@@ -1,4 +1,5 @@
 import { useState, useEffect, startTransition } from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 import {
   Box,
   Dialog,
@@ -30,6 +31,7 @@ const STATUSES = ['ACTIVE', 'INACTIVE'];
 
 const UserDialog = ({ open, onClose, onSave, user, loading }) => {
   const isEdit = !!user;
+  const { t } = useLanguage();
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
 
@@ -57,24 +59,24 @@ const UserDialog = ({ open, onClose, onSave, user, loading }) => {
   const validate = () => {
     const newErrors = {};
     if (!form.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
+      newErrors.firstName = t('First name is required');
     }
     if (!form.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
+      newErrors.lastName = t('Last name is required');
     }
     if (!form.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = t('Email is required');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
-      newErrors.email = 'Invalid email format';
+      newErrors.email = t('Invalid email format');
     }
     if (!isEdit && !form.password.trim()) {
-      newErrors.password = 'Password is required';
+      newErrors.password = t('Password is required');
     }
     if (!form.roleName) {
-      newErrors.roleName = 'Role is required';
+      newErrors.roleName = t('Role is required');
     }
     if (form.phone.trim() && !/^[0-9]{10}$/.test(form.phone.trim())) {
-      newErrors.phone = 'Phone must be exactly 10 digits';
+      newErrors.phone = t('Phone must be exactly 10 digits');
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -131,14 +133,14 @@ const UserDialog = ({ open, onClose, onSave, user, loading }) => {
       }}
     >
       <DialogTitle sx={{ fontWeight: 600, pb: 1 }}>
-        {isEdit ? 'Edit User' : 'Add User'}
+        {isEdit ? t('Edit User') : t('Add User')}
       </DialogTitle>
 
       <Box component="form" onSubmit={handleSubmit} noValidate>
         <DialogContent sx={{ pt: 1 }}>
           <TextField
             fullWidth
-            label="First Name"
+            label={t('First Name')}
             value={form.firstName}
             onChange={handleChange('firstName')}
             onBlur={handleBlur('firstName')}
@@ -151,7 +153,7 @@ const UserDialog = ({ open, onClose, onSave, user, loading }) => {
 
           <TextField
             fullWidth
-            label="Last Name"
+            label={t('Last Name')}
             value={form.lastName}
             onChange={handleChange('lastName')}
             onBlur={handleBlur('lastName')}
@@ -163,7 +165,7 @@ const UserDialog = ({ open, onClose, onSave, user, loading }) => {
 
           <TextField
             fullWidth
-            label="Email"
+            label={t('Email')}
             value={form.email}
             onChange={handleChange('email')}
             error={!!errors.email}
@@ -179,7 +181,7 @@ const UserDialog = ({ open, onClose, onSave, user, loading }) => {
           {!isEdit && (
             <TextField
               fullWidth
-              label="Password"
+              label={t('Password')}
               type="password"
               value={form.password}
               onChange={handleChange('password')}
@@ -192,20 +194,20 @@ const UserDialog = ({ open, onClose, onSave, user, loading }) => {
 
           <TextField
             fullWidth
-            label="Phone"
+            label={t('Phone')}
             value={form.phone}
             onChange={handlePhoneChange}
             error={!!errors.phone}
-            helperText={errors.phone || 'Exactly 10 digits'}
+            helperText={errors.phone || t('Exactly 10 digits')}
             inputProps={{ maxLength: 10 }}
             sx={{ mb: 2 }}
           />
 
           <FormControl fullWidth required sx={{ mb: 2 }}>
-            <InputLabel>Role</InputLabel>
+            <InputLabel>{t('Role')}</InputLabel>
             <Select
               value={form.roleName}
-              label="Role"
+              label={t('Role')}
               onChange={handleChange('roleName')}
               error={!!errors.roleName}
             >
@@ -219,10 +221,10 @@ const UserDialog = ({ open, onClose, onSave, user, loading }) => {
 
           {isEdit && (
             <FormControl fullWidth required sx={{ mb: 1 }}>
-              <InputLabel>Status</InputLabel>
+              <InputLabel>{t('Status')}</InputLabel>
               <Select
                 value={form.status}
-                label="Status"
+                label={t('Status')}
                 onChange={handleChange('status')}
               >
                 {STATUSES.map((s) => (
@@ -242,7 +244,7 @@ const UserDialog = ({ open, onClose, onSave, user, loading }) => {
             variant="outlined"
             color="inherit"
           >
-            Cancel
+            {t('Cancel')}
           </Button>
           <Button
             type="submit"
@@ -253,9 +255,9 @@ const UserDialog = ({ open, onClose, onSave, user, loading }) => {
             {loading ? (
               <CircularProgress size={20} color="inherit" />
             ) : isEdit ? (
-              'Update'
+              t('Update')
             ) : (
-              'Save'
+              t('Save')
             )}
           </Button>
         </DialogActions>

@@ -22,6 +22,7 @@ import StockHistoryTable from '../components/stock/StockHistoryTable';
 import StockInDialog from '../components/stock/StockInDialog';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { stockIn, updateStockIn, getStockInHistory, deleteStockIn } from '../api/stockApi';
+import { useLanguage } from '../context/LanguageContext';
 
 const StockIn = () => {
   const [rows, setRows] = useState([]);
@@ -39,22 +40,24 @@ const StockIn = () => {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
 
+  const { t } = useLanguage();
+
   const totalPages = Math.ceil(total / 10) || 0;
 
   const columns = useMemo(() => [
     {
       key: 'srNo',
-      label: 'Sr. No.',
+      label: t('Sr. No.'),
       render: (_, index) => page * 10 + index + 1,
     },
-    { key: 'productName', label: 'Product Name' },
-    { key: 'quantity', label: 'Quantity', align: 'right' },
-    { key: 'currentStock', label: 'Current Stock', align: 'right' },
-    { key: 'performedBy', label: 'Performed By', render: (row) => row.performedBy || '-' },
-    { key: 'notes', label: 'Notes / Remarks' },
+    { key: 'productName', label: t('Product Name') },
+    { key: 'quantity', label: t('Quantity'), align: 'right' },
+    { key: 'currentStock', label: t('Current Stock'), align: 'right' },
+    { key: 'performedBy', label: t('Performed By'), render: (row) => row.performedBy || '-' },
+    { key: 'notes', label: t('Notes / Remarks') },
     {
       key: 'stockInDate',
-      label: 'Stock In Date',
+      label: t('Stock In Date'),
       render: (row) => {
         if (!row.stockInDate && !row.createdAt) return '-';
         const date = row.stockInDate || row.createdAt;
@@ -69,15 +72,15 @@ const StockIn = () => {
     },
     {
       key: 'actions',
-      label: 'Actions',
+      label: t('Actions'),
       render: (row) => (
         <Box sx={{ display: 'flex', gap: 0.5 }}>
-          <Tooltip title="View / Edit">
+          <Tooltip title={t('View / Edit')}>
             <IconButton size="small" color="primary" onClick={() => handleOpenEdit(row)}>
               <ViewIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Delete">
+          <Tooltip title={t('Delete')}>
             <IconButton size="small" color="error" onClick={() => handleOpenDelete(row)}>
               <DeleteIcon fontSize="small" />
             </IconButton>
@@ -85,7 +88,7 @@ const StockIn = () => {
         </Box>
       ),
     },
-  ], [page]);
+  ], [page, t]);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -115,13 +118,13 @@ const StockIn = () => {
     } catch {
       setSnackbar({
         open: true,
-        message: 'Failed to load stock in history',
+        message: t('Failed to load stock in history'),
         severity: 'error',
       });
     } finally {
       setLoading(false);
     }
-  }, [page, search]);
+  }, [page, search, t]);
 
   useEffect(() => {
     startTransition(() => {
@@ -167,14 +170,14 @@ const StockIn = () => {
         await updateStockIn(editRecord.id, payload);
         setSnackbar({
           open: true,
-          message: 'Stock In updated successfully',
+          message: t('Stock In updated successfully'),
           severity: 'success',
         });
       } else {
         await stockIn(payload);
         setSnackbar({
           open: true,
-          message: 'Stock added successfully',
+          message: t('Stock added successfully'),
           severity: 'success',
         });
       }
@@ -209,7 +212,7 @@ const StockIn = () => {
       await deleteStockIn(deleteTarget.id);
       setSnackbar({
         open: true,
-        message: 'Stock In deleted successfully',
+        message: t('Stock In deleted successfully'),
         severity: 'success',
       });
       handleCloseDelete();
@@ -233,8 +236,8 @@ const StockIn = () => {
   return (
     <>
       <PageHeader
-        title="Stock In"
-        subtitle="Record incoming stock"
+        title={t('Stock In')}
+        subtitle={t('Record incoming stock')}
         action={
           <Button
             variant="contained"
@@ -242,7 +245,7 @@ const StockIn = () => {
             onClick={handleOpenAdd}
             sx={{ boxShadow: '0 4px 14px rgba(21,101,192,0.25)' }}
           >
-            Add Stock
+            {t('Add Stock')}
           </Button>
         }
       />
@@ -268,7 +271,7 @@ const StockIn = () => {
         >
           <TextField
             size="small"
-            placeholder="Search stock in history..."
+            placeholder={t('Search stock in history...')}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             sx={{ flex: 1, minWidth: 200 }}
@@ -281,7 +284,7 @@ const StockIn = () => {
             }}
           />
           <Button type="submit" variant="contained" size="small">
-            Search
+            {t('Search')}
           </Button>
           {search && (
             <Button
@@ -290,7 +293,7 @@ const StockIn = () => {
               color="inherit"
               onClick={handleClearSearch}
             >
-              Clear
+              {t('Clear')}
             </Button>
           )}
         </Box>
@@ -303,7 +306,7 @@ const StockIn = () => {
         totalPages={totalPages}
         loading={loading}
         onPageChange={handleChangePage}
-        emptyMessage="No Stock In records found."
+        emptyMessage={t('No Stock In records found.')}
         emptyIcon={ArrowCircleDown}
       />
 
@@ -319,10 +322,10 @@ const StockIn = () => {
         open={deleteOpen}
         onClose={handleCloseDelete}
         onConfirm={handleConfirmDelete}
-        title="Delete Stock In Record"
+        title={t('Delete Stock In Record')}
         message={
           deleteTarget
-            ? `Are you sure you want to delete the stock in record for "${deleteTarget.productName}"? This action cannot be undone.`
+            ? `${t('Are you sure you want to delete the stock in record for "')}${deleteTarget.productName}${t('"? This action cannot be undone.')}`
             : ''
         }
         loading={deleteLoading}

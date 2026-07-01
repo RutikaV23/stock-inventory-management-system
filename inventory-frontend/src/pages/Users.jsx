@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, startTransition } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 import {
   Box,
   Button,
@@ -31,6 +32,7 @@ import {
 } from '../api/userApi';
 
 const Users = () => {
+  const { t } = useLanguage();
   const [users, setUsers] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
@@ -81,13 +83,13 @@ const Users = () => {
     } catch {
       setSnackbar({
         open: true,
-        message: 'Failed to load users',
+        message: t('Failed to load users'),
         severity: 'error',
       });
     } finally {
       setLoading(false);
     }
-  }, [page, search, statusFilter]);
+  }, [page, search, statusFilter, t]);
 
   useEffect(() => {
     startTransition(() => {
@@ -130,7 +132,7 @@ const Users = () => {
     } catch {
       setSnackbar({
         open: true,
-        message: 'Failed to load user details',
+        message: t('Failed to load user details'),
         severity: 'error',
       });
     } finally {
@@ -150,14 +152,14 @@ const Users = () => {
         await updateUser(editUser.id, payload);
         setSnackbar({
           open: true,
-          message: 'User updated successfully',
+          message: t('User updated successfully'),
           severity: 'success',
         });
       } else {
         await createUser(payload);
         setSnackbar({
           open: true,
-          message: 'User created successfully',
+          message: t('User created successfully'),
           severity: 'success',
         });
       }
@@ -167,8 +169,8 @@ const Users = () => {
       const message =
         err.response?.data?.message ||
         (err.message === 'Network Error'
-          ? 'Unable to connect to server'
-          : 'An unexpected error occurred');
+          ? t('Unable to connect to server')
+          : t('An unexpected error occurred'));
       setSnackbar({ open: true, message, severity: 'error' });
     } finally {
       setSaveLoading(false);
@@ -192,7 +194,7 @@ const Users = () => {
       await deleteUser(deleteTarget.id);
       setSnackbar({
         open: true,
-        message: 'User deleted successfully',
+        message: t('User deleted successfully'),
         severity: 'success',
       });
       handleCloseDelete();
@@ -201,8 +203,8 @@ const Users = () => {
       const message =
         err.response?.data?.message ||
         (err.message === 'Network Error'
-          ? 'Unable to connect to server'
-          : 'An unexpected error occurred');
+          ? t('Unable to connect to server')
+          : t('An unexpected error occurred'));
       setSnackbar({ open: true, message, severity: 'error' });
     } finally {
       setDeleteLoading(false);
@@ -216,8 +218,8 @@ const Users = () => {
   return (
     <>
       <PageHeader
-        title="Users"
-        subtitle="Manage system users"
+        title={t('Users')}
+        subtitle={t('Manage system users')}
         action={
           <Button
             variant="contained"
@@ -225,7 +227,7 @@ const Users = () => {
             onClick={handleOpenAdd}
             sx={{ boxShadow: '0 4px 14px rgba(21,101,192,0.25)' }}
           >
-            Add User
+            {t('Add User')}
           </Button>
         }
       />
@@ -245,15 +247,15 @@ const Users = () => {
         }}
       >
         <FormControl size="small" sx={{ minWidth: 130 }}>
-          <InputLabel>Status</InputLabel>
+          <InputLabel>{t('Status')}</InputLabel>
           <Select
             value={statusFilter}
-            label="Status"
+            label={t('Status')}
             onChange={handleStatusFilter}
           >
-            <MenuItem value="">All</MenuItem>
-            <MenuItem value="ACTIVE">Active</MenuItem>
-            <MenuItem value="INACTIVE">Inactive</MenuItem>
+            <MenuItem value="">{t('All')}</MenuItem>
+            <MenuItem value="ACTIVE">{t('Active')}</MenuItem>
+            <MenuItem value="INACTIVE">{t('Inactive')}</MenuItem>
           </Select>
         </FormControl>
         <Box
@@ -263,7 +265,7 @@ const Users = () => {
         >
           <TextField
             size="small"
-            placeholder="Search by first name, last name, or email..."
+            placeholder={t('Search by first name, last name, or email...')}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             sx={{ flex: 1, minWidth: 200 }}
@@ -276,7 +278,7 @@ const Users = () => {
             }}
           />
           <Button type="submit" variant="contained" size="small">
-            Search
+            {t('Search')}
           </Button>
           {search && (
             <Button
@@ -285,7 +287,7 @@ const Users = () => {
               color="inherit"
               onClick={handleClearSearch}
             >
-              Clear
+              {t('Clear')}
             </Button>
           )}
         </Box>
@@ -308,12 +310,12 @@ const Users = () => {
             sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }}
           />
           <Typography variant="h6" fontWeight={600} color="text.secondary" gutterBottom>
-            No users found
+            {t('No users found')}
           </Typography>
           <Typography variant="body2" color="text.disabled" sx={{ mb: 3 }}>
             {search
-              ? 'No users match your search. Try a different search term.'
-              : 'Get started by adding your first user.'}
+              ? t('No users match your search. Try a different search term.')
+              : t('Get started by adding your first user.')}
           </Typography>
           {!search && (
             <Button
@@ -321,7 +323,7 @@ const Users = () => {
               startIcon={<AddIcon />}
               onClick={handleOpenAdd}
             >
-              Add User
+              {t('Add User')}
             </Button>
           )}
         </Paper>

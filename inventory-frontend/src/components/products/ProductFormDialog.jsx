@@ -10,6 +10,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { toSentenceCase } from '../../utils/sentenceCase';
+import { useLanguage } from '../../context/LanguageContext';
 
 const initialForm = {
   name: '',
@@ -21,6 +22,7 @@ const initialForm = {
 const ProductFormDialog = ({ open, onClose, onSave, product, loading }) => {
   const isEdit = !!product;
   const [form, setForm] = useState(initialForm);
+  const { t } = useLanguage();
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -44,17 +46,17 @@ const ProductFormDialog = ({ open, onClose, onSave, product, loading }) => {
   const validate = () => {
     const newErrors = {};
     if (!form.name.trim()) {
-      newErrors.name = 'Product name is required';
+      newErrors.name = t('Product name is required');
     }
     if (form.price === '' || form.price == null) {
-      newErrors.price = 'Price is required';
+      newErrors.price = t('Price is required');
     } else if (Number(form.price) <= 0 || !Number.isFinite(Number(form.price))) {
-      newErrors.price = 'Must be greater than 0';
+      newErrors.price = t('Must be greater than 0');
     }
     if (form.stockQuantity === '' || form.stockQuantity == null) {
-      newErrors.stockQuantity = 'Stock quantity is required';
+      newErrors.stockQuantity = t('Stock quantity is required');
     } else if (!Number.isInteger(Number(form.stockQuantity)) || Number(form.stockQuantity) < 0) {
-      newErrors.stockQuantity = 'Must be a non-negative integer';
+      newErrors.stockQuantity = t('Must be a non-negative integer');
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -96,14 +98,14 @@ const ProductFormDialog = ({ open, onClose, onSave, product, loading }) => {
       }}
     >
       <DialogTitle sx={{ fontWeight: 600, pb: 1 }}>
-        {isEdit ? 'Edit Product' : 'Add Product'}
+        {isEdit ? t('Edit Product') : t('Add Product')}
       </DialogTitle>
 
       <Box component="form" onSubmit={handleSubmit} noValidate>
         <DialogContent sx={{ pt: 1 }}>
           <TextField
             fullWidth
-            label="Product Name"
+            label={t('Product Name')}
             value={form.name}
             onChange={handleChange('name')}
             onBlur={handleBlur('name')}
@@ -116,7 +118,7 @@ const ProductFormDialog = ({ open, onClose, onSave, product, loading }) => {
 
           <TextField
             fullWidth
-            label="Stock Quantity"
+            label={t('Stock Quantity')}
             type="number"
             value={form.stockQuantity}
             onChange={handleChange('stockQuantity')}
@@ -129,7 +131,7 @@ const ProductFormDialog = ({ open, onClose, onSave, product, loading }) => {
 
           <TextField
             fullWidth
-            label="Price"
+            label={t('Price')}
             type="number"
             value={form.price}
             onChange={handleChange('price')}
@@ -142,7 +144,7 @@ const ProductFormDialog = ({ open, onClose, onSave, product, loading }) => {
 
           <TextField
             fullWidth
-            label="Description"
+            label={t('Description')}
             value={form.description}
             onChange={handleChange('description')}
             multiline
@@ -158,7 +160,7 @@ const ProductFormDialog = ({ open, onClose, onSave, product, loading }) => {
             variant="outlined"
             color="inherit"
           >
-            Cancel
+            {t('Cancel')}
           </Button>
           <Button
             type="submit"
@@ -169,7 +171,7 @@ const ProductFormDialog = ({ open, onClose, onSave, product, loading }) => {
             {loading ? (
               <CircularProgress size={20} color="inherit" />
             ) : (
-              'Save'
+              t('Save')
             )}
           </Button>
         </DialogActions>

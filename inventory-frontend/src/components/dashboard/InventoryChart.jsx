@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import formatCurrency from '../../utils/formatCurrency';
+import { useLanguage } from '../../context/LanguageContext';
 
 const data = [
   { month: 'Jan', value: 45000 },
@@ -22,6 +23,7 @@ const data = [
 ];
 
 const InventoryChart = () => {
+  const { t } = useLanguage();
   return (
     <Paper
       elevation={0}
@@ -35,10 +37,10 @@ const InventoryChart = () => {
       }}
     >
       <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
-        Inventory Value
+        {t('Inventory Value')}
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Monthly inventory value trend (INR)
+        {t('Monthly inventory value trend (INR)')}
       </Typography>
       <Box sx={{ width: '100%', height: 260 }}>
         <ResponsiveContainer>
@@ -47,7 +49,7 @@ const InventoryChart = () => {
             <XAxis dataKey="month" tick={{ fontSize: 12 }} stroke="#9e9e9e" />
             <YAxis tick={{ fontSize: 12 }} stroke="#9e9e9e" tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
             <Tooltip
-              formatter={(value) => [formatCurrency(value), 'Value']}
+              formatter={(value) => [formatCurrency(value), t('Value')]}
               contentStyle={{ borderRadius: 8, border: '1px solid #e0e0e0' }}
             />
             <Line

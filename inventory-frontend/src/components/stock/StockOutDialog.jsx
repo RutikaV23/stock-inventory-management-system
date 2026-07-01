@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Dialog,
@@ -11,6 +11,7 @@ import {
   Autocomplete,
   Alert,
 } from '@mui/material';
+import { useLanguage } from '../../context/LanguageContext';
 import { toSentenceCase } from '../../utils/sentenceCase';
 import { getProducts } from '../../api/productApi';
 
@@ -29,7 +30,9 @@ const StockOutDialog = ({ open, onClose, onSave, loading, stockOutRecord }) => {
   const [productsLoading, setProductsLoading] = useState(false);
   const [fetchError, setFetchError] = useState('');
 
-  const fetchProducts = async () => {
+  const { t } = useLanguage();
+
+  const fetchProducts = useCallback(async () => {
     setProductsLoading(true);
     setFetchError('');
     try {
@@ -44,11 +47,11 @@ const StockOutDialog = ({ open, onClose, onSave, loading, stockOutRecord }) => {
       }
     } catch {
       setProducts([]);
-      setFetchError('Failed to load products. Please try again.');
+      setFetchError(t('Failed to load products. Please try again.'));
     } finally {
       setProductsLoading(false);
     }
-  };
+  }, [t]);
 
   useEffect(() => {
     if (open) {
@@ -65,23 +68,23 @@ const StockOutDialog = ({ open, onClose, onSave, loading, stockOutRecord }) => {
       }
       fetchProducts();
     }
-  }, [open, stockOutRecord]);
+  }, [open, stockOutRecord, fetchProducts]);
 
   const validate = () => {
     const newErrors = {};
     if (!form.product) {
-      newErrors.product = 'Product is required';
+      newErrors.product = t('Product is required');
     }
     if (form.quantity === '' || form.quantity == null) {
-      newErrors.quantity = 'Quantity is required';
+      newErrors.quantity = t('Quantity is required');
     } else if (!Number.isInteger(Number(form.quantity)) || Number(form.quantity) <= 0) {
-      newErrors.quantity = 'Must be a positive integer';
+      newErrors.quantity = t('Must be a positive integer');
     }
     if (!form.performedBy.trim()) {
-      newErrors.performedBy = 'Performed by is required';
+      newErrors.performedBy = t('Performed by is required');
     }
     if (!form.reason.trim()) {
-      newErrors.reason = 'Reason is required';
+      newErrors.reason = t('Reason is required');
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -123,7 +126,7 @@ const StockOutDialog = ({ open, onClose, onSave, loading, stockOutRecord }) => {
       }}
     >
       <DialogTitle sx={{ fontWeight: 600, pb: 1 }}>
-        {isEdit ? 'Edit Stock Out' : 'Issue Stock'}
+        {isEdit ? t('Edit Stock Out') : t('Issue Stock')}
       </DialogTitle>
 
       <Box component="form" onSubmit={handleSubmit} noValidate>
@@ -146,11 +149,11 @@ const StockOutDialog = ({ open, onClose, onSave, loading, stockOutRecord }) => {
             }}
             getOptionLabel={(option) => option.name || ''}
             isOptionEqualToValue={(option, value) => value ? option.id === value.id : false}
-            noOptionsText="No active products available"
+            noOptionsText={t('No active products available')}
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Product"
+                label={t('Product')}
                 required
                 error={!!errors.product}
                 helperText={errors.product}
@@ -170,7 +173,7 @@ const StockOutDialog = ({ open, onClose, onSave, loading, stockOutRecord }) => {
 
           <TextField
             fullWidth
-            label="Quantity"
+            label={t('Quantity')}
             type="number"
             value={form.quantity}
             onChange={handleChange('quantity')}
@@ -183,20 +186,20 @@ const StockOutDialog = ({ open, onClose, onSave, loading, stockOutRecord }) => {
 
           <TextField
             fullWidth
-            label="Performed By"
+            label={t('Performed By')}
             value={form.performedBy}
             onChange={handleChange('performedBy')}
             onBlur={handleBlur('performedBy')}
             error={!!errors.performedBy}
             helperText={errors.performedBy}
             required
-            placeholder="Enter person name"
+            placeholder={t('Enter person name')}
             sx={{ mb: 2 }}
           />
 
           <TextField
             fullWidth
-            label="Reason"
+            label={t('Reason')}
             value={form.reason}
             onChange={handleChange('reason')}
             onBlur={handleBlur('reason')}
@@ -215,7 +218,7 @@ const StockOutDialog = ({ open, onClose, onSave, loading, stockOutRecord }) => {
             variant="outlined"
             color="inherit"
           >
-            Cancel
+            {t('Cancel')}
           </Button>
           <Button
             type="submit"
@@ -226,9 +229,9 @@ const StockOutDialog = ({ open, onClose, onSave, loading, stockOutRecord }) => {
             {loading ? (
               <CircularProgress size={20} color="inherit" />
             ) : isEdit ? (
-              'Update'
+              t('Update')
             ) : (
-              'Save'
+              t('Save')
             )}
           </Button>
         </DialogActions>

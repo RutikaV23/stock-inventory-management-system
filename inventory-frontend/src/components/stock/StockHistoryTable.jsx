@@ -11,6 +11,7 @@ import {
   Button,
   Typography,
 } from '@mui/material';
+import { useLanguage } from '../../context/LanguageContext';
 
 const StockHistoryTable = ({
   columns = [],
@@ -19,9 +20,12 @@ const StockHistoryTable = ({
   totalPages,
   loading,
   onPageChange,
-  emptyMessage = 'No records found.',
+  emptyMessage: emptyMessageProp,
   emptyIcon: EmptyIcon,
 }) => {
+  const { t } = useLanguage();
+  const emptyMessage = emptyMessageProp ?? t('No records found.');
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
@@ -119,10 +123,10 @@ const StockHistoryTable = ({
             onClick={() => onPageChange(page - 1)}
             sx={{ minWidth: 90 }}
           >
-            Previous
+            {t('Previous')}
           </Button>
           <Typography variant="body2" color="text.secondary">
-            Page {page + 1} of {totalPages}
+            {t('Page')} {page + 1} {t('of')} {totalPages}
           </Typography>
           <Button
             size="small"
@@ -131,7 +135,7 @@ const StockHistoryTable = ({
             onClick={() => onPageChange(page + 1)}
             sx={{ minWidth: 90 }}
           >
-            Next
+            {t('Next')}
           </Button>
         </Box>
       )}

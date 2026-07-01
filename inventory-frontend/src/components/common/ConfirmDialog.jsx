@@ -8,16 +8,22 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { WarningAmberOutlined } from '@mui/icons-material';
+import { useLanguage } from '../../context/LanguageContext';
 
 const ConfirmDialog = ({
   open,
   onClose,
   onConfirm,
-  title = 'Confirm Delete',
-  message = 'Are you sure you want to delete this item?',
-  confirmLabel = 'Delete',
+  title: titleProp,
+  message: messageProp,
+  confirmLabel: confirmLabelProp,
   loading,
 }) => {
+  const { t } = useLanguage();
+  const title = titleProp ?? t('Confirm Delete');
+  const message = messageProp ?? t('Are you sure you want to delete this item?');
+  const confirmLabel = confirmLabelProp ?? t('Delete');
+
   return (
     <Dialog
       open={open}
@@ -44,7 +50,7 @@ const ConfirmDialog = ({
           variant="outlined"
           color="inherit"
         >
-          Cancel
+          {t('Cancel')}
         </Button>
         <Button
           onClick={onConfirm}

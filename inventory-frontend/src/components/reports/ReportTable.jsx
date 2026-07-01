@@ -13,6 +13,7 @@ import {
   Chip,
 } from '@mui/material';
 import { AssessmentOutlined } from '@mui/icons-material';
+import { useLanguage } from '../../context/LanguageContext';
 import formatCurrency from '../../utils/formatCurrency';
 
 const statusColorMap = {
@@ -28,8 +29,11 @@ const ReportTable = ({
   totalPages,
   loading,
   onPageChange,
-  emptyMessage = 'No reports found.',
+  emptyMessage: emptyMessageProp,
 }) => {
+  const { t } = useLanguage();
+  const emptyMessage = emptyMessageProp ?? t('No reports found.');
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
@@ -140,10 +144,10 @@ const ReportTable = ({
             onClick={() => onPageChange(page - 1)}
             sx={{ minWidth: 90 }}
           >
-            Previous
+            {t('Previous')}
           </Button>
           <Typography variant="body2" color="text.secondary">
-            Page {page + 1} of {totalPages}
+            {t('Page')} {page + 1} {t('of')} {totalPages}
           </Typography>
           <Button
             size="small"
@@ -152,7 +156,7 @@ const ReportTable = ({
             onClick={() => onPageChange(page + 1)}
             sx={{ minWidth: 90 }}
           >
-            Next
+            {t('Next')}
           </Button>
         </Box>
       )}

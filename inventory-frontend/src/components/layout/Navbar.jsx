@@ -12,10 +12,11 @@ import {
   ListItemIcon,
   Divider,
 } from '@mui/material';
-import { Menu as MenuIcon, Person, Logout as LogoutIcon } from '@mui/icons-material';
+import { Menu as MenuIcon, Person, Palette as PaletteIcon, Logout as LogoutIcon } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
-const pageTitles = {
+const pageTitleKey = {
   '/': 'Dashboard',
   '/products': 'Products',
   '/users': 'Users',
@@ -29,10 +30,11 @@ const Navbar = ({ onToggleSidebar }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { t } = useLanguage();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  const pageTitle = pageTitles[location.pathname] || 'Dashboard';
+  const pageTitle = t(pageTitleKey[location.pathname] || 'Dashboard');
 
   const handleAvatarClick = (e) => {
     setAnchorEl(e.currentTarget);
@@ -58,9 +60,9 @@ const Navbar = ({ onToggleSidebar }) => {
       position="sticky"
       elevation={0}
       sx={{
-        bgcolor: 'white',
+        bgcolor: 'background.paper',
         borderBottom: '1px solid',
-        borderColor: 'grey.200',
+        borderColor: 'divider',
         color: 'text.primary',
       }}
     >
@@ -111,7 +113,7 @@ const Navbar = ({ onToggleSidebar }) => {
               minWidth: 220,
               borderRadius: 2,
               border: '1px solid',
-              borderColor: 'grey.200',
+              borderColor: 'divider',
             },
           }}
         >
@@ -124,11 +126,15 @@ const Navbar = ({ onToggleSidebar }) => {
                 fontSize: '1.1rem',
                 fontWeight: 700,
                 mx: 'auto',
+                mb: 1,
               }}
             >
               {user?.firstName?.[0]}
               {user?.lastName?.[0]}
             </Avatar>
+            <Typography variant="subtitle2" fontWeight={600} noWrap>
+              {user?.firstName} {user?.lastName}
+            </Typography>
           </Box>
 
           <Divider />
@@ -137,14 +143,27 @@ const Navbar = ({ onToggleSidebar }) => {
             <ListItemIcon>
               <Person fontSize="small" />
             </ListItemIcon>
-            My Profile
+            {t('My Profile')}
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              navigate('/profile', { state: { section: 'appearance' } });
+            }}
+            sx={{ py: 1.5 }}
+          >
+            <ListItemIcon>
+              <PaletteIcon fontSize="small" />
+            </ListItemIcon>
+            {t('Theme')}
           </MenuItem>
 
           <MenuItem onClick={handleLogout} sx={{ py: 1.5 }}>
             <ListItemIcon>
               <LogoutIcon fontSize="small" />
             </ListItemIcon>
-            Logout
+            {t('Logout')}
           </MenuItem>
         </Menu>
       </Toolbar>

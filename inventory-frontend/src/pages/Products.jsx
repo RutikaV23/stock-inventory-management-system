@@ -28,6 +28,7 @@ import {
   updateProduct,
   deleteProduct,
 } from '../api/productApi';
+import { useLanguage } from '../context/LanguageContext';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -47,6 +48,8 @@ const Products = () => {
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   const totalPages = Math.ceil(total / 10) || 0;
+
+  const { t } = useLanguage();
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -82,13 +85,13 @@ const Products = () => {
     } catch {
       setSnackbar({
         open: true,
-        message: 'Failed to load products',
+        message: t('Failed to load products'),
         severity: 'error',
       });
     } finally {
       setLoading(false);
     }
-  }, [page, search, statusFilter]);
+  }, [page, search, statusFilter, t]);
 
   useEffect(() => {
     startTransition(() => {
@@ -139,14 +142,14 @@ const Products = () => {
         await updateProduct(editProduct.id, payload);
         setSnackbar({
           open: true,
-          message: 'Product updated successfully',
+          message: t('Product updated successfully'),
           severity: 'success',
         });
       } else {
         await createProduct(payload);
         setSnackbar({
           open: true,
-          message: 'Product created successfully',
+          message: t('Product created successfully'),
           severity: 'success',
         });
       }
@@ -181,7 +184,7 @@ const Products = () => {
       await deleteProduct(deleteTarget.id);
       setSnackbar({
         open: true,
-        message: 'Product deleted successfully',
+        message: t('Product deleted successfully'),
         severity: 'success',
       });
       handleCloseDelete();
@@ -205,8 +208,8 @@ const Products = () => {
   return (
     <>
       <PageHeader
-        title="Products"
-        subtitle="Manage your product catalog"
+        title={t('Products')}
+        subtitle={t('Manage your product catalog')}
         action={
           <Button
             variant="contained"
@@ -214,7 +217,7 @@ const Products = () => {
             onClick={handleOpenAdd}
             sx={{ boxShadow: '0 4px 14px rgba(21,101,192,0.25)' }}
           >
-            Add Product
+            {t('Add Product')}
           </Button>
         }
       />
@@ -234,15 +237,15 @@ const Products = () => {
         }}
       >
         <FormControl size="small" sx={{ minWidth: 130 }}>
-          <InputLabel>Status</InputLabel>
+          <InputLabel>{t('Status')}</InputLabel>
           <Select
             value={statusFilter}
-            label="Status"
+            label={t('Status')}
             onChange={handleStatusFilter}
           >
-            <MenuItem value="">All</MenuItem>
-            <MenuItem value="ACTIVE">Active</MenuItem>
-            <MenuItem value="INACTIVE">Inactive</MenuItem>
+            <MenuItem value="">{t('All')}</MenuItem>
+            <MenuItem value="ACTIVE">{t('Active')}</MenuItem>
+            <MenuItem value="INACTIVE">{t('Inactive')}</MenuItem>
           </Select>
         </FormControl>
         <Box
@@ -252,7 +255,7 @@ const Products = () => {
         >
           <TextField
             size="small"
-            placeholder="Search by product name..."
+            placeholder={t('Search by product name...')}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             sx={{ flex: 1, minWidth: 200 }}
@@ -265,7 +268,7 @@ const Products = () => {
             }}
           />
           <Button type="submit" variant="contained" size="small">
-            Search
+            {t('Search')}
           </Button>
           {search && (
             <Button
@@ -274,7 +277,7 @@ const Products = () => {
               color="inherit"
               onClick={handleClearSearch}
             >
-              Clear
+              {t('Clear')}
             </Button>
           )}
         </Box>
@@ -297,12 +300,12 @@ const Products = () => {
             sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }}
           />
           <Typography variant="h6" fontWeight={600} color="text.secondary" gutterBottom>
-            No products found
+            {t('No products found')}
           </Typography>
           <Typography variant="body2" color="text.disabled" sx={{ mb: 3 }}>
             {search
-              ? 'No products match your search. Try a different search term.'
-              : 'Get started by adding your first product.'}
+              ? t('No products match your search. Try a different search term.')
+              : t('Get started by adding your first product.')}
           </Typography>
           {!search && (
             <Button
@@ -310,7 +313,7 @@ const Products = () => {
               startIcon={<AddIcon />}
               onClick={handleOpenAdd}
             >
-              Add Product
+              {t('Add Product')}
             </Button>
           )}
         </Paper>

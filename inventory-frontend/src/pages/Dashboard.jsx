@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
 import {
   Box,
   Paper,
@@ -38,6 +39,7 @@ const icons = {
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -86,20 +88,20 @@ const Dashboard = () => {
   }, []);
 
   const quickActions = [
-    { label: 'Add Product', icon: <Add />, path: '/products', color: 'primary' },
-    { label: 'Stock In', icon: <Login />, path: '/stock-in', color: 'success' },
-    { label: 'Stock Out', icon: <Logout />, path: '/stock-out', color: 'warning' },
-    { label: 'View Reports', icon: <AssessmentOutlined />, path: '/reports', color: 'info' },
+    { label: t('Add Product'), icon: <Add />, path: '/products', color: 'primary' },
+    { label: t('Stock In'), icon: <Login />, path: '/stock-in', color: 'success' },
+    { label: t('Stock Out'), icon: <Logout />, path: '/stock-out', color: 'warning' },
+    { label: t('View Reports'), icon: <AssessmentOutlined />, path: '/reports', color: 'info' },
   ];
 
   return (
     <>
       <Box>
         <Typography variant="h5" fontWeight={700} sx={{ mb: 0.5 }}>
-          Dashboard
+          {t('Dashboard')}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          Overview of your inventory
+          {t('Overview of your inventory')}
         </Typography>
       </Box>
 
@@ -119,44 +121,44 @@ const Dashboard = () => {
           >
             <StatCard
               icon={icons.total}
-              title="Total Products"
+              title={t('Total Products')}
               value={stats.totalProducts}
-              description="All products"
+              description={t('All products')}
               color="#1976d2"
             />
             <StatCard
               icon={icons.totalStock}
-              title="Total Stock"
+              title={t('Total Stock')}
               value={stats.totalStockQty.toLocaleString()}
-              description="Units in stock"
+              description={t('Units in stock')}
               color="#388e3c"
             />
             <StatCard
               icon={icons.available}
-              title="Available Qty"
+              title={t('Available Qty')}
               value={stats.availableQty.toLocaleString()}
-              description="Active products"
+              description={t('Active products')}
               color="#0288d1"
             />
             <StatCard
               icon={icons.lowStock}
-              title="Low Stock"
+              title={t('Low Stock')}
               value={stats.lowStockCount}
-              description="Need replenishment"
+              description={t('Need replenishment')}
               color="#f57c00"
             />
             <StatCard
               icon={icons.outOfStock}
-              title="Out of Stock"
+              title={t('Out of Stock')}
               value={stats.outOfStockCount}
-              description="Zero inventory"
+              description={t('Zero inventory')}
               color="#d32f2f"
             />
             <StatCard
               icon={icons.value}
-              title="Inventory Value"
+              title={t('Inventory Value')}
               value={formatCurrency(stats.totalValue)}
-              description="Total worth"
+              description={t('Total worth')}
               color="#7b1fa2"
             />
           </Box>
@@ -195,7 +197,7 @@ const Dashboard = () => {
             }}
           >
             <Typography variant="h6" fontWeight={600} sx={{ mb: 2.5 }}>
-              Quick Actions
+              {t('Quick Actions')}
             </Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
               {quickActions.map((action) => (

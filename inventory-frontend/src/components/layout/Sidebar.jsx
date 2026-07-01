@@ -21,23 +21,25 @@ import {
   Inventory2Outlined,
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 const DRAWER_WIDTH = 260;
 const COLLAPSED_WIDTH = 72;
 
 const menuItems = [
-  { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-  { text: 'Products', icon: <InventoryIcon />, path: '/products' },
-  { text: 'Users', icon: <PeopleIcon />, path: '/users' },
-  { text: 'Stock In', icon: <StockInIcon />, path: '/stock-in' },
-  { text: 'Stock Out', icon: <StockOutIcon />, path: '/stock-out' },
-  { text: 'Reports', icon: <ReportsIcon />, path: '/reports' },
+  { key: 'Dashboard', icon: <DashboardIcon />, path: '/' },
+  { key: 'Products', icon: <InventoryIcon />, path: '/products' },
+  { key: 'Users', icon: <PeopleIcon />, path: '/users' },
+  { key: 'Stock In', icon: <StockInIcon />, path: '/stock-in' },
+  { key: 'Stock Out', icon: <StockOutIcon />, path: '/stock-out' },
+  { key: 'Reports', icon: <ReportsIcon />, path: '/reports' },
 ];
 
 const Sidebar = ({ open, mobileOpen, onClose }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   const drawerContent = (
     <Box
@@ -64,10 +66,10 @@ const Sidebar = ({ open, mobileOpen, onClose }) => {
         {open && (
           <Box>
             <Typography variant="h6" fontWeight={700} sx={{ lineHeight: 1.2 }}>
-              Inventory
+              {t('Inventory')}
             </Typography>
             <Typography variant="caption" sx={{ opacity: 0.6 }}>
-              Management System
+              {t('Management System')}
             </Typography>
           </Box>
         )}
@@ -83,7 +85,7 @@ const Sidebar = ({ open, mobileOpen, onClose }) => {
 
           return (
             <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
-              <Tooltip title={open ? '' : item.text} placement="right">
+              <Tooltip title={open ? '' : t(item.key)} placement="right">
                 <ListItemButton
                   selected={isActive}
                   onClick={() => {
@@ -126,7 +128,7 @@ const Sidebar = ({ open, mobileOpen, onClose }) => {
                   </ListItemIcon>
                   {open && (
                     <ListItemText
-                      primary={item.text}
+                      primary={t(item.key)}
                       primaryTypographyProps={{
                         fontSize: '0.875rem',
                         fontWeight: isActive ? 600 : 400,
