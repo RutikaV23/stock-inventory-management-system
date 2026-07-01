@@ -76,7 +76,9 @@ const Sidebar = ({ open, mobileOpen, onClose }) => {
       <Divider sx={{ borderColor: 'rgba(255,255,255,0.08)' }} />
 
       <List sx={{ flex: 1, px: 1, pt: 1 }}>
-        {menuItems.map((item) => {
+        {menuItems.filter(
+          (item) => item.path !== '/users' || user?.role === 'SUPER_ADMIN'
+        ).map((item) => {
           const isActive = location.pathname === item.path;
 
           return (

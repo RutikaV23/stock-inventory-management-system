@@ -9,8 +9,11 @@ import StockOut from '../pages/StockOut';
 import Reports from '../pages/Reports';
 import Profile from '../pages/Profile';
 import PrivateRoute from './PrivateRoute';
+import { useAuth } from '../context/AuthContext';
 
 const AppRoutes = () => {
+  const { user } = useAuth();
+
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
@@ -18,7 +21,9 @@ const AppRoutes = () => {
         <Route element={<PrivateRoute />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/products" element={<Products />} />
-          <Route path="/users" element={<Users />} />
+          <Route path="/users" element={
+            user?.role === 'SUPER_ADMIN' ? <Users /> : <Navigate to="/" replace />
+          } />
           <Route path="/stock-in" element={<StockIn />} />
           <Route path="/stock-out" element={<StockOut />} />
           <Route path="/reports" element={<Reports />} />

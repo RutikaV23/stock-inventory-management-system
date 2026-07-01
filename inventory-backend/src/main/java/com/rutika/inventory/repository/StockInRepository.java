@@ -8,12 +8,23 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 
 @Repository
 public interface StockInRepository extends JpaRepository<StockIn, String> {
 
     List<StockIn> findByProductIdOrderByCreatedAtDesc(String productId);
+
+    @Query("SELECT COALESCE(SUM(si.quantity), 0) FROM StockIn si WHERE si.product.id = :productId")
+    Integer sumQuantityByProductId(@Param("productId") String productId);
+
+    @Query("SELECT COALESCE(SUM(si.quantity), 0) FROM StockIn si WHERE si.product.id = :productId " +
+           "AND (:dateFrom IS NULL OR si.createdAt >= :dateFrom) " +
+           "AND (:dateTo IS NULL OR si.createdAt <= :dateTo)")
+    Integer sumQuantityByProductIdAndDateBetween(@Param("productId") String productId,
+                                                  @Param("dateFrom") Instant dateFrom,
+                                                  @Param("dateTo") Instant dateTo);
 
     List<StockIn> findByStatus(String status);
 
