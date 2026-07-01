@@ -79,7 +79,7 @@ const Sidebar = ({ open, mobileOpen, onClose }) => {
 
       <List sx={{ flex: 1, px: 1, pt: 1 }}>
         {menuItems.filter(
-          (item) => item.path !== '/users' || user?.role === 'SUPER_ADMIN'
+          (item) => item.path !== '/users' || (user?.role || localStorage.getItem('role')) === 'SUPER_ADMIN'
         ).map((item) => {
           const isActive = location.pathname === item.path;
 

@@ -12,6 +12,7 @@ import {
   Alert,
 } from '@mui/material';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
 import { toSentenceCase } from '../../utils/sentenceCase';
 import { getProducts } from '../../api/productApi';
 
@@ -31,6 +32,7 @@ const StockInDialog = ({ open, onClose, onSave, loading, stockInRecord }) => {
   const [fetchError, setFetchError] = useState('');
 
   const { t } = useLanguage();
+  const { user } = useAuth();
 
   const fetchProducts = useCallback(async () => {
     setProductsLoading(true);
@@ -64,11 +66,15 @@ const StockInDialog = ({ open, onClose, onSave, loading, stockInRecord }) => {
           notes: stockInRecord.notes || '',
         });
       } else {
-        setForm(initialForm);
+        const userName = user ? `${user.firstName} ${user.lastName}`.trim() : '';
+        setForm({
+          ...initialForm,
+          performedBy: userName,
+        });
       }
       fetchProducts();
     }
-  }, [open, stockInRecord, fetchProducts]);
+  }, [open, stockInRecord, user, fetchProducts]);
 
   const getProductFromList = (productId) => {
     return products.find((p) => p.id === productId) || null;
@@ -83,9 +89,6 @@ const StockInDialog = ({ open, onClose, onSave, loading, stockInRecord }) => {
       newErrors.quantity = t('Quantity is required');
     } else if (!Number.isInteger(Number(form.quantity)) || Number(form.quantity) <= 0) {
       newErrors.quantity = t('Must be a positive integer');
-    }
-    if (!form.performedBy.trim()) {
-      newErrors.performedBy = t('Performed by is required');
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -196,6 +199,7 @@ const StockInDialog = ({ open, onClose, onSave, loading, stockInRecord }) => {
             required
             placeholder={t('Enter person name')}
             sx={{ mb: 2 }}
+            slotProps={{ input: { readOnly: true } }}
           />
 
           <TextField

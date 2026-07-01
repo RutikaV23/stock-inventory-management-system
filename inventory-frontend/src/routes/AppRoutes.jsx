@@ -14,6 +14,7 @@ import { useAuth } from '../context/AuthContext';
 
 const AppRoutes = () => {
   const { user } = useAuth();
+  const role = user?.role || localStorage.getItem('role');
 
   return (
     <Routes>
@@ -23,7 +24,7 @@ const AppRoutes = () => {
           <Route path="/" element={<Dashboard />} />
           <Route path="/products" element={<Products />} />
           <Route path="/users" element={
-            user?.role === 'SUPER_ADMIN' ? <Users /> : <Navigate to="/" replace />
+            role === 'SUPER_ADMIN' ? <Users /> : <Navigate to="/" replace />
           } />
           <Route path="/stock-in" element={<StockIn />} />
           <Route path="/stock-out" element={<StockOut />} />

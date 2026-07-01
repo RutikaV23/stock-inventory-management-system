@@ -17,7 +17,11 @@ export const AuthProvider = ({ children }) => {
       return;
     }
     getProfile()
-      .then(({ data }) => setUser(data.data))
+      .then(({ data }) => {
+        const userData = data.data;
+        localStorage.setItem('role', userData.role);
+        setUser(userData);
+      })
       .catch(() => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
@@ -32,9 +36,9 @@ export const AuthProvider = ({ children }) => {
     const { accessToken, refreshToken, user: userData, role } = data.data;
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
-    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('user', JSON.stringify({ ...userData, role }));
     localStorage.setItem('role', role);
-    setUser(userData);
+    setUser({ ...userData, role });
     return data;
   };
 
